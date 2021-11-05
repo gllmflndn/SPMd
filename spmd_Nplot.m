@@ -1,13 +1,13 @@
-% The first version is done by Wenlin
-% $Id: spmd_Nplot.m,v 1.8 2005/03/24 22:04:42 huizhang Exp $
-
 function spmd_Nplot(y,h,D)
 % create and update normal probability plot
 % FORMAT spmd_Nplot(y,h,D)
 %    Y- data
 %    h- axes handle to plot the QQ-plot
 %    D- all information attached to the plot
-%
+%________________________________________________________________________
+% @(#)spmd_Nplot.m
+
+
 % __________________________ Function called ____________________________
 %
 % spm_invNcdf
@@ -21,19 +21,19 @@ if nargin < 2,  h = gca; end
 %-Check if input is a vector.
 %------------------------------------------------------------------------
 [m,n]=size(y);
-if m~=1 & n~=1,
-   error('The input data must be a vector');
-elseif m==1,
-   y=y';
-   m=n;
+if m~=1 && n~=1
+    error('The input data must be a vector');
+elseif m==1
+    y=y';
+    m=n;
 end
 
 %-Create the normal probability of the quantiles.
 %------------------------------------------------------------------------
 eprob = [0.5./m:1./m:(m - 0.5)./m];
 x  = spm_invNcdf(eprob,0,1)';
-[sy si] = sort(y);
-[stmp osi] = sort(si);
+[sy, si] = sort(y);
+[stmp, osi] = sort(si);
 
 %-Find the first and third quartiles of the data.
 %------------------------------------------------------------------------
@@ -89,6 +89,3 @@ ydes = uimenu(hy,'Label','Sorted observed data in ascending order.');
 ht = title('Normal Probability Plot');
 set(ht,'fontsize',FS(8));
 set(h, 'fontsize',FS(8), 'userdata',D);
-    
-  
-

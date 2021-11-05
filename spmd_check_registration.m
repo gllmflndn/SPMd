@@ -1,7 +1,3 @@
-% The first version is done by Wenlin
-% $Id: spmd_check_registration.m,v 1.6 2007/03/16 14:37:27 nichols Exp $
-
-
 function hs = spmd_check_registration(images,Tag)
 % A visual check of image registration quality.
 % FORMAT spmd_check_registration or spmd_check_registration(images)
@@ -23,9 +19,7 @@ function hs = spmd_check_registration(images,Tag)
 %_______________________________________________________________________
 % @(#)spm_check_registration.m	2.2 John Ashburner 99/10/29
 % @(#)spmd_check_registration.m	1.8 Wen-Lin Luo 02/10/03
-%
-% @(#)spmd_check_registration.m	1.1 04/07/08
-%
+
 %------------------------- Function Called -----------------------------
 %      spm_select
 %      spm_figure
@@ -34,70 +28,70 @@ function hs = spmd_check_registration(images,Tag)
 %------------------------------------------------------------------------
 
 
-if nargin==0,
-	images = spm_select([1 15],'image',['Select images']);
-	spmd_check_registration(images);
-
-elseif nargin==1,
-	fg = spm_figure('Findwin','Graphics');
-	if isempty(fg),
-		fg=spm_figure('Create','Graphics');
-		set(gcf,'DoubleBuffer','on'); %- eliminate flash
-		if isempty(fg),
-			error('Cant create graphics window');
-		end;
-	else,
-		spm_figure('Clear','Graphics');
-	end;
-	
-	mn = size(images,1);
-	n  = round(mn^0.4);
-	m  = ceil(mn/n);
-	w  = 1/n;
-	h  = 1/m;
-	ds = (w+h)*0.02;
-	for ij=1:mn,
-		i  = 1-h*(floor((ij-1)/n)+1);
-		j  = w*rem(ij-1,n);
-		handle(ij) = spm_orthviews('Image', images(ij,:),...
-			     [j+ds/2 i+ds/2 w-ds h-ds]);
-		if ij==1, spm_orthviews('Space'); end;
-	end;
-
-	if nargout>0
-	  hs = handle;
-	end
-	
+if nargin==0
+    images = spm_select([1 15],'image',['Select images']);
+    spmd_check_registration(images);
+    
+elseif nargin==1
+    fg = spm_figure('Findwin','Graphics');
+    if isempty(fg)
+        fg=spm_figure('Create','Graphics');
+        set(gcf,'DoubleBuffer','on'); %- eliminate flash
+        if isempty(fg)
+            error('Cant create graphics window');
+        end
+    else
+        spm_figure('Clear','Graphics');
+    end
+    
+    mn = size(images,1);
+    n  = round(mn^0.4);
+    m  = ceil(mn/n);
+    w  = 1/n;
+    h  = 1/m;
+    ds = (w+h)*0.02;
+    for ij=1:mn
+        i  = 1-h*(floor((ij-1)/n)+1);
+        j  = w*rem(ij-1,n);
+        handle(ij) = spm_orthviews('Image', images(ij,:),...
+            [j+ds/2 i+ds/2 w-ds h-ds]);
+        if ij==1, spm_orthviews('Space'); end
+    end
+    
+    if nargout>0
+        hs = handle;
+    end
+    
 elseif nargin>1
-        fg = spm_figure('Findwin',Tag);
-	if isempty(fg),
-		fg=spm_figure('Createwin',Tag);
+    fg = spm_figure('Findwin',Tag);
+    if isempty(fg)
+        fg=spm_figure('Createwin',Tag);
         set(gcf,'DoubleBuffer','on');       %-eliminate flash
-		spmd_SptlBar;
-		if isempty(fg),
-			error('Cant create graphics window');
-		end;
-	else,
-		spm_figure('Clear',Tag);
-	end;
-
-	mn = size(images,1);
-	n  = round(mn^0.4);
-	m  = ceil(mn/n);
-	w  = 1/n;
-	h  = 1/m;
-	ds = (w+h)*0.02;
-	for ij=1:mn,
-		i  = 1-h*(floor((ij-1)/n)+1);
-		j  = w*rem(ij-1,n);
-		handle(ij) = spmd_orthviews('fig',fg,'Image', images(ij,:),[j+ds/2 i+ds/2 w-ds h-ds]);
-		if ij==1, spmd_orthviews('fig',fg,'Space'); end;
-	end;
-
-	if nargout>0
-	  hs = handle;
-	end
-
-else,
-	error('Incorrect Usage');
-end;
+        spmd_SptlBar;
+        if isempty(fg)
+            error('Cant create graphics window');
+        end
+    else
+        spm_figure('Clear',Tag);
+    end
+    
+    mn = size(images,1);
+    n  = round(mn^0.4);
+    m  = ceil(mn/n);
+    w  = 1/n;
+    h  = 1/m;
+    ds = (w+h)*0.02;
+    for ij=1:mn
+        i  = 1-h*(floor((ij-1)/n)+1);
+        j  = w*rem(ij-1,n);
+        handle(ij) = spmd_orthviews('fig',fg,'Image', images(ij,:),[j+ds/2 i+ds/2 w-ds h-ds]);
+        if ij==1, spmd_orthviews('fig',fg,'Space'); end
+    end
+    
+    if nargout>0
+        hs = handle;
+    end
+    
+else
+    error('Incorrect Usage');
+end

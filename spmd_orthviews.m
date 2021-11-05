@@ -1,6 +1,3 @@
-% The first version is done by Wenlin
-% $Id: spmd_orthviews.m,v 1.8 2008/02/20 12:20:20 nichols Exp $
-
 function varargout = spmd_orthviews(action,varargin)
 % Display Orthogonal Views of a Normalized Image
 % FORMAT H = spmd_orthviews('Image',filename[,position])

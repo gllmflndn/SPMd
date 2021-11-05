@@ -1,6 +1,3 @@
-% The first version is done by Wenlin
-% $Id: spmd_MS.m,v 1.4 2005/03/25 17:22:02 huizhang Exp $
-
 function spmd_MS(varargin)
 %
 % Creates page of spatial summary images
@@ -56,16 +53,15 @@ function spmd_MS(varargin)
 %   spmd_MS('Wind',1:3,[0 50])
 % or
 %   spmd_MS('Wind',1:3,{[0 50],[-6 6],[0 10]})
-%________________________________________________________________________
-% @(#)spmd_sptl.m	1.15 Tom Nichols & Wen-Lin Luo 03/07/16
-%
-% @(#)spmd_MS.m	1.2 04/07/08 
+%__________________________________________________________________________
+% @(#)spmd_MS.m	1.15 Tom Nichols & Wen-Lin Luo 03/07/16
 
-%------------------------ Functions Called -----------------------------
+
+%______________________________Function Called ____________________________
 % spm_str_manip
 % spmd_check_registration
 % spmd_orthviews
-%-----------------------------------------------------------------------
+%__________________________________________________________________________
 
 %load SPM
 
@@ -106,7 +102,7 @@ while (a <= nargin)
     if (nargin<3), error('Bad useage (did you include image number?)');end
     ks   = varargin{a+1};
     fNm = varargin{a+2};
-    if (length(ks)>1 & (~iscell(fNm) | length(ks)~=length(fNm)))
+    if (length(ks)>1 && (~iscell(fNm) || length(ks)~=length(fNm)))
       error('Must specify equal number of img nums and img names'); end
     for  k=1:length(ks)
       if (length(ks)==1)
@@ -121,7 +117,7 @@ while (a <= nargin)
     if (nargin<3), error('Bad useage (did you include image number?)');end
     ks   = varargin{a+1};
     Dsc = varargin{a+2};
-    if (length(ks)>1 & (~iscell(Dsc) | length(ks)~=length(Dsc)))
+    if (length(ks)>1 && (~iscell(Dsc) || length(ks)~=length(Dsc)))
       error('Must specify equal number of img nums and descriptions'); end
     for  k=1:length(ks)
       if (length(ks)==1)
@@ -136,11 +132,11 @@ while (a <= nargin)
     if (nargin<3), error('Bad useage (did you include image number?)');end
     ks   = varargin{a+1};
     Win = varargin{a+2};
-    if (~iscell(Win) & length(Win)==2)
+    if (~iscell(Win) && length(Win)==2)
       % Allow multiple images to be set to a common window
       Wind(ks) = {Win};
     else
-      if (length(ks)>1 & (~iscell(Win) | length(ks)~=length(Win)))
+      if (length(ks)>1 && (~iscell(Win) || length(ks)~=length(Win)))
 	error('Must specify equal number of img nums and windows'); end
       for  k=1:length(ks)
 	if (length(ks)==1)
@@ -174,12 +170,12 @@ end
 % Weed out unused elements
 Gd = [];
 for i=1:24
-  if ~isempty(Imgs{i}), 
+  if ~isempty(Imgs{i})
     Gd = [Gd i];
-    if isempty(Desc{i}),
+    if isempty(Desc{i})
       Desc{i} = spm_str_manip(Imgs{i},'ts');
     end
-    if isempty(Wind{i}),
+    if isempty(Wind{i})
       Wind{i} = 'auto';
     end
   end
@@ -215,5 +211,3 @@ for i=1:nImg
   set(h, 'YAxisLocation','right');
   set(get(h,'YLabel'),'Interpreter','tex','String',Desc{i});
 end
-
-

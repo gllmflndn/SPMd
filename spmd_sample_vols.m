@@ -1,6 +1,3 @@
-% The first version is done by Wenlin
-% $Id: spmd_sample_vols.m,v 1.3 2007/03/16 14:48:57 nichols Exp $
-
 function X = spmd_sample_vols(V,x,y,z,hold)
 % returns voxel values from a collection of memory mapped images
 % FORMAT X = spmd_sample_vols(V,x,y,z,hold);
@@ -45,4 +42,3 @@ for t = 1:nV
   X(:,:,t) = spm_sample_vol(V(t),x,y,z,hold);
   
 end
-

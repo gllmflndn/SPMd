@@ -1,8 +1,5 @@
-% The first version is down by Wenlin
-% $Id: spmd_getTS.m,v 1.2 2004/12/27 16:19:00 huizhang Exp $
-
 function [TS,V] = spmd_getTS(P,x,y,z,Sca)
-% spmd_getTs: get the time series at the position (x,y,z)
+% Return the time series at the position (x,y,z)
 % FORMAT [TS,V] = spmd_getTS(P,x,y,z,Sca)
 % Input
 % P    -  Matrix of filenames -or- Struct array of file handles
@@ -22,24 +19,23 @@ function [TS,V] = spmd_getTS(P,x,y,z,Sca)
 %    spmd_sample_vols
 %------------------------------------------------------------------------
 
- 
+
 % Let spm_sample_vol check validity x,y,z
 
 if isstruct(P)
-  V = P;
+    V = P;
 else
-  V = spm_vol(P);
+    V = spm_vol(P);
 end
 nT  = length(V);
 
 
 if (nargin>4)
-  for i=1:nT
-    V(i).pinfo(1:2,:) = V(i).pinfo(1:2,:)*Sca(i);
-  end
+    for i=1:nT
+        V(i).pinfo(1:2,:) = V(i).pinfo(1:2,:)*Sca(i);
+    end
 end
 
 TS = spmd_sample_vols(V,x,y,z,0);
 TS = reshape(TS,[prod(size(x)) nT])';
 TS = squeeze(reshape(TS,[nT size(x)]));
-
