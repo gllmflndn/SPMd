@@ -8,15 +8,9 @@ function spmd_Nplot(y,h,D)
 % @(#)spmd_Nplot.m
 
 
-% __________________________ Function called ____________________________
-%
-% spm_invNcdf
-% spmd_prctile
-% _______________________________________________________________________
-
 global TimeCurs
 
-if nargin < 2,  h = gca; end
+if nargin < 2, h = gca; end
 
 %-Check if input is a vector.
 %------------------------------------------------------------------------
@@ -37,8 +31,8 @@ x  = spm_invNcdf(eprob,0,1)';
 
 %-Find the first and third quartiles of the data.
 %------------------------------------------------------------------------
-q1y = spmd_prctile(sy,25);
-q3y = spmd_prctile(sy,75);
+q1y = spm_percentile(sy,25);
+q3y = spm_percentile(sy,75);
 medy = median(sy);
 q1x = spm_invNcdf(0.25,0,1);
 q3x = spm_invNcdf(0.75,0,1);
