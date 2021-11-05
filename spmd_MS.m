@@ -190,8 +190,7 @@ nImg = length(Imgs);
 %-Create the model summary window
 %========================================================================
 % fire up orthoviews  (w/ colorbars w/ windowing)
-spmd_check_registration(str2mat(Imgs{:}),'Model Summary');
-set(gcf,'DoubleBuffer','on');
+spmd_check_registration(char(Imgs{:}),'Model Summary');
 fg = findobj('Tag','Model Summary');
 set(fg,'numbertitle','off',...
     'name','Model Summary');

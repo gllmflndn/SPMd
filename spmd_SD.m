@@ -64,7 +64,7 @@ if isempty(Data)
             RNG = [-3 3];
             save SPMres PstRes;
         elseif tmp == 0
-            Data = str2mat(VY.fname);
+            Data = char(VY.fname);
             STR = 'Raw Data ';
             RNG = {'auto','auto','auto','auto','auto'};
         end
@@ -216,7 +216,7 @@ Wind = Wind(Gd);
 nImg = length(Imgs);
 
 % fire up orthoviews  (w/ colorbars w/ windowing)
-spmd_check_registration(str2mat(Imgs{:}),'Scan Detail');
+spmd_check_registration(char(Imgs{:}),'Scan Detail');
 fg = findobj('Tag','Scan Detail');
 set(fg,'numbertitle','off');
 spmd_orthviews('fig',fg,'addcolorbar',1:nImg);

@@ -39,28 +39,26 @@ function varargout = spmd_mtsview(TR,varargin)
 
 FigPos = [];
 
-if (~isempty(TR))
-    if isstr(TR)
-        switch (lower(TR))
-            case 'set'
-                SetTimeCurs(varargin{1});
-                return
-            case 'get'
-                varargout{1} = GetTimeCurs;
-                return
-            case 'clickset'
-                ClickMove;
-                return
-            case 'figysp'
-                FigPos = varargin{1};
-                TR = varargin{2};
-                varargin(1:2) = [];
-            case 'update'
-                UpdateTS(varargin{1:end});
-                return
-            otherwise
-                error('Unknown command');
-        end
+if ischar(TR)
+    switch (lower(TR))
+        case 'set'
+            SetTimeCurs(varargin{1});
+            return
+        case 'get'
+            varargout{1} = GetTimeCurs;
+            return
+        case 'clickset'
+            ClickMove;
+            return
+        case 'figysp'
+            FigPos = varargin{1};
+            TR = varargin{2};
+            varargin(1:2) = [];
+        case 'update'
+            UpdateTS(varargin{1:end});
+            return
+        otherwise
+            error('Unknown command');
     end
 end
 

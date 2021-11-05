@@ -216,29 +216,29 @@ end
 
 
 tmp = spm_figure('FindWin','Graphics');
-if (isempty(tmp) | fig ~= tmp)
+if (isempty(tmp) || fig ~= tmp)
   % We're using a non-Graphics window; get st via get_st; set it w/
   % set_st later
   st = get_st(fig);
-  if isempty(st) | isempty(st.fig),
+  if isempty(st) || isempty(st.fig)
     st = reset_st(fig);
   end
 else
   % We're using the Graphics window, use global st
   global st
-  if isempty(st) | isempty(st.fig), 
+  if isempty(st) || isempty(st.fig)
     st = reset_st; 
-  end;   
-end;
+  end
+end
 
-switch lower(action),
+switch lower(action)
  
- case {'image','mip'},
+ case {'image','mip'}
  %----------------------------------------------------------------------
   [H,st] = specify_image(st,varargin{1});
   if ~isempty(H)
-    if length(varargin)>=2, st.vols{H}.area = varargin{2}; end;
-    if isempty(st.bb), st.bb = maxbb(st); end;
+    if length(varargin)>=2, st.vols{H}.area = varargin{2}; end
+    if isempty(st.bb), st.bb = maxbb(st); end
     st = bbox(st);
     
     if strcmp(action,'mip')
@@ -247,10 +247,10 @@ switch lower(action),
     end
     
     st = redraw(st,H);
-  end;
+  end
  varargout{1} = H;
  
- case 'mipify',
+ case 'mipify'
  %----------------------------------------------------------------------
   for i=valid_handles(st,varargin{1})
     if isfield(st.vols{i},'mip')
@@ -490,7 +490,7 @@ switch lower(action),
 end;
 
 %if (st.fig ~= spm_figure('FindWin','Graphics'))
-if (isempty(tmp) | st.fig ~= tmp)
+if (isempty(tmp) || st.fig ~= tmp)
   set_st(st,fig);
 end
 spm('Pointer');
@@ -567,10 +567,10 @@ for i=valid_handles(st,handle)
   end
   st.vols{i}.cbar = ax;
   
-  tmp = sprintf('Cbar-%d-%d',st.fig.Number,i);
+  tmp = sprintf('Cbar-%d-%d',get(st.fig,'Number'),i);
   h = uicontextmenu('Tag',tmp,'UserData',ax,'Parent',st.fig);
   tmp = num2str(i);
-  fs = num2str(st.fig.Number); % This will break for noninteger figure num!!!!
+  fs = num2str(get(st.fig,'Number')); % This will break for noninteger figure num!!!!
   uimenu(h,'Label','Adjust intensity window...')
   uimenu(h,'Separator','on','Label','Set max',...
 	 'CallBack',['spmd_orthviews(''fig'',' fs ',''clickcolorbar'',' tmp ',''max'');'],...
@@ -1236,7 +1236,7 @@ for i = valid_handles(st,arg1),
       imgs = imgs*scal+dcoff;
     end;
     
-    fs = num2str(st.fig.Number); % This will break for noninteger figure num!!!!
+    fs = num2str(get(st.fig,'Number')); % This will break for noninteger figure num!!!!
     xx = gcbf;
     if (~isempty(xx) & xx == findobj('Tag','Model Summary')),
       callback = ['spmd_orthviews(''fig'',' fs ',''Reposition'');','spmd_orthviews(''fig'',' fs ',''ClickAction'');'];
@@ -1470,7 +1470,7 @@ for i = valid_handles(st,hndl)
     % Have we added a 2nd colorscale since last time?
     Chng = xor(length(st.vols{i}.in_h)==1,isnan(sc)); 
   end
-  if isfield(st.vols{i},'in_ax') & ~Chng
+  if isfield(st.vols{i},'in_ax') && ~Chng
     set(st.vols{i}.in_h(1),'String',str)
     if ~isempty(str2)
       set(st.vols{i}.in_h(2),'String',str2)
@@ -1522,12 +1522,12 @@ function st = get_st(fig)
 %-Get st structure
 %-------------------------------------------------------------------------
 % if (nargin<1)
-if (nargin<1) & (spm_figure('FindWin','Graphics')==gcf)
+if (nargin<1) && (spm_figure('FindWin','Graphics')==gcf)
   global st
 else
   if nargin<1, fig = gcf; end
   D = get(fig,'UserData');
-  if isstruct(D) & isfield(D,'st')
+  if isstruct(D) && isfield(D,'st')
     st = D.st;
   else
     st = [];
