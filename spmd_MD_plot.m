@@ -20,15 +20,9 @@ function spmd_MD_plot(h,type,D)
 % _________________________________________________________________________
 % @(#)spmd_MD_plot.m
 
-% ______________________________Function Called __________________________
-%
-%        spm_platform
-%        spmd_Nplot
-%        plot_res (internal)
-% ________________________________________________________________________
 
 if nargin < 3
-    if(iscell(h))
+    if iscell(h)
         h = celldisp(h);
         D = get(h,'userdata');
     else
@@ -79,7 +73,7 @@ switch lower(type)
         titl   = 'Lag-1 plot';
         plot_res(h,X,Y,titl,D, hf);
         
-    case {6,'QQ'}
+    case {6,'qq'}
         Y      = D(1).data;
         spmd_Nplot(Y,h,D);
 end
@@ -146,25 +140,25 @@ else
         
         %- adjuste 'xlim' and 'ylim'
         
-        if min(Xdata)> 1000
+        if min(Xdata) > 1000
             minXdata = min(Xdata)*0.9995;
             maxXdata = max(Xdata)*1.0005;
-        elseif (min(Xdata)<1000) & (min(Xdata)>=100)
+        elseif (min(Xdata)<1000) && (min(Xdata)>=100)
             minXdata = min(Xdata)*0.995;
             maxXdata = max(Xdata)*1.005;
-        elseif (min(Xdata)<100) & (min(Xdata) >=10)
+        elseif (min(Xdata)<100) && (min(Xdata) >=10)
             minXdata = min(Xdata)*0.95;
             maxXdata = max(Xdata)*1.05;
-        elseif (min(Xdata)<10) & (min(Xdata) >= 1)
+        elseif (min(Xdata)<10) && (min(Xdata) >= 1)
             minXdata = min(Xdata)*0.5;
             maxXdata = max(Xdata)*1.5;
-        elseif (min(Xdata)<1) & (min(Xdata)>=0)
+        elseif (min(Xdata)<1) && (min(Xdata)>=0)
             minXdata = min(Xdata)*0.5;
             maxXdata = max(Xdata)*1.5;
-        elseif (min(Xdata)<0) & (min(Xdata)>=-1)
+        elseif (min(Xdata)<0) && (min(Xdata)>=-1)
             minXdata = min(Xdata)*2;
             maxXdata = max(Xdata)*2;
-        elseif (min(Xdata)<-1) & (min(Xdata)>=-10)
+        elseif (min(Xdata)<-1) && (min(Xdata)>=-10)
             minXdata = min(Xdata)*1.5;
             maxXdata = max(Xdata)*1.5;
         else
@@ -172,25 +166,25 @@ else
             maxXdata = max(Xdata)*1.1;
         end
         
-        if min(Ydata) >1000
+        if min(Ydata) > 1000
             minYdata = min(Ydata)*0.9995;
             maxYdata = max(Ydata)*1.0005;
-        elseif (min(Ydata)<1000) & (min(Ydata)>=100)
+        elseif (min(Ydata)<1000) && (min(Ydata)>=100)
             minYdata = min(Ydata)*0.995;
             maxYdata = max(Ydata)*1.005;
-        elseif (min(Ydata)<100) & (min(Ydata)>=10)
+        elseif (min(Ydata)<100) && (min(Ydata)>=10)
             minYdata = min(Ydata)*0.95;
             maxYdata = max(Ydata)*1.05;
-        elseif (min(Ydata)<10) & (min(Ydata)>=1)
+        elseif (min(Ydata)<10) && (min(Ydata)>=1)
             minYdata = min(Ydata)*0.95;
             maxYdata = max(Ydata)*1.05;
-        elseif (min(Ydata)<1) & (min(Ydata)>=0)
+        elseif (min(Ydata)<1) && (min(Ydata)>=0)
             minYdata = min(Ydata)*0.5;
             maxYdata = max(Ydata)*1.5;
-        elseif (min(Ydata)<0) & (min(Ydata)>=-1)
+        elseif (min(Ydata)<0) && (min(Ydata)>=-1)
             minYdata = min(Ydata)*2;
             maxYdata = max(Ydata)*2;
-        elseif (min(Ydata)<-1) & (min(Ydata)>-10)
+        elseif (min(Ydata)<-1) && (min(Ydata)>-10)
             minYdata = min(Ydata)*1.5;
             maxYdata = max(Ydata)*1.5;
         else
@@ -202,11 +196,11 @@ else
         %Tom's change
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        if (minXdata == maxXdata)
+        if minXdata == maxXdata
             minXdata = minXdata - 0.5;
             maxXdata = maxXdata + 0.5;
         end
-        if (minYdata == maxYdata)
+        if minYdata == maxYdata
             minYdata = minYdata - 0.5;
             maxYdata = maxYdata + 0.5;
         end
@@ -218,7 +212,6 @@ else
         lz = findobj(h, 'Tag', 'hz=0');
         lv = findobj(h, 'Tag', 'vt=0');
         ht = findobj(h, 'Tag', 'SelPt');
-        Ux = get(h, 'uicontextmenu');
         
         if strcmp(X.abline,'h=0')
             hy = get(h,'Ylim');

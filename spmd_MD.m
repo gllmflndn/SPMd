@@ -4,7 +4,7 @@ function spmd_MD(varargin)
 % varargin - None
 % Using the current spatial and temporal location, show time series plots
 % and diagnostic plots for residuals
-% _______________________________________________________________________
+% _________________________________________________________________________
 %
 % In the general linear regression, the main tool for the diagnosis of the
 % model is to look at the behavior of the residuals. Usually, it is shown
@@ -12,7 +12,7 @@ function spmd_MD(varargin)
 % important diagnostic plots are used here to check the model fitting at
 % single voxel. By using this tool, we can find the possible cause of the
 % significance of the summary statistics and possible problematic scans.
-% _______________________________________________________________________
+% _________________________________________________________________________
 %
 % The output of this function includes eight plots. They are:
 % Diagnostic plots:
@@ -25,14 +25,14 @@ function spmd_MD(varargin)
 % Time series plots:
 % o Raw data, drift, and fitted data
 % o Standard residual vs horizontal line
-% _______________________________________________________________________
+% _________________________________________________________________________
 %
 % Caution:
 % Before using this function, there should at least one spatial window
 % opened, so that the spatial position could be specified. If bothe
 % spatial window exist, this function will automatically select the
 % spatial position in the most recently clicked spatial window.
-% _______________________________________________________________________
+% _________________________________________________________________________
 %
 % Reference:
 % Luo, W-L and Nichols T. E. (2002) Diagnosis and Exploration of
@@ -44,13 +44,13 @@ function spmd_MD(varargin)
 spm('Pointer','watch');
 global TimeCurs
 
-%=============================================================
+%==========================================================================
 %-Find the spatial position
-%=============================================================
+%==========================================================================
 if nargin == 0
     
     %-Check if both spatial viewers exist and return the handlers
-    %---------------------------------------------------------------------
+    %----------------------------------------------------------------------
     ms = findobj('Tag','Model Summary');
     sd = findobj('Tag','Scan Detail');
     
@@ -60,7 +60,7 @@ if nargin == 0
     
     %-Select the most recent spatial window, either spatial summary or
     % spatial detail window.
-    %---------------------------------------------------------------------
+    %----------------------------------------------------------------------
     
     fg = gcbf;
     
@@ -88,7 +88,7 @@ if nargin == 0
     end
     
     %-get the position of cromshair in the most recently clicked window.
-    %--------------------------------------------------------------------
+    %----------------------------------------------------------------------
     xyz    = spmd_orthviews('fig',fg,'pos',1);
     xyzmm  = spmd_orthviews('fig',fg,'pos');
     
@@ -100,14 +100,14 @@ else
 end
 
 %- set the toolbar at the top of the model detail window.
-%----------------------------------------------------------------------
+%--------------------------------------------------------------------------
 WS   = spm('WinScale');             %-Window scaling factors
 FS   = spm('fontsizes');            % uicontrol font size
 PF   = spm_platform('fonts');
 
-%=============================================================
+%==========================================================================
 %-Find the temporal position and necessary data
-%=============================================================
+%==========================================================================
 %-get the temporal position in the temporal summary window. If not
 % available, it uses the middle of the scans.
 %-------------------------------------------------------------
@@ -123,19 +123,19 @@ if isempty(t)
 end
 
 %- get all necessary data
-%-------------------------------------------------------------
+%--------------------------------------------------------------------------
 D = get_data(xSPM,SS,xyz);
 
-%=============================================================
+%==========================================================================
 %-Fire up the model detail window
-%=============================================================
+%==========================================================================
 SetWindow(t,xyz,xyzmm);
 f    = spm_figure('GetWin','SPMd_MD');
 
 if ~isempty(get(f,'userdata'))
     
     %- MD window is apparenlty up and running; just re-plot
-    %------------------------------------------------------------------
+    %----------------------------------------------------------------------
     
     hs = findobj(f,'Tag','UI_in_MD_plot');
     ht = findobj(f,'Tag','TS_in_MD_plot');
@@ -150,7 +150,7 @@ if ~isempty(get(f,'userdata'))
     
     %- Update time series plots of raw data, drift, fitted data, and
     %  residuals
-    %------------------------------------------------------------------
+    %----------------------------------------------------------------------
     
     if(get(hit,'value')==1)
         spmd_mtsview('update',ht,...
@@ -165,7 +165,7 @@ if ~isempty(get(f,'userdata'))
 else
     
     %- Create new temporal diagnotic and time series plots
-    %------------------------------------------------------------------
+    %----------------------------------------------------------------------
     %plot the diagnostic plots
     
     str = ['Res vs Predictor|Res vs Global Signal|abs(Res) vs Predictor|'...
@@ -245,7 +245,6 @@ else
     %- the alternative one is for raw data
     %----------------------------------------------------------------------
     
-    
     %- specify the option
     if isfield(xSPM.xVi,'iid') || ...
             (isfield(xSPM.xVi,'form') && strcmp(xSPM.xVi.form,'i.i.d')) || ...
@@ -267,39 +266,42 @@ else
     set(h,'Tag','TS_in_MD_plot');
     set(f,'userdata',[h1 h2 h3 h4]);
     
-    
-    UiTS = uicontrol(f,'style','popupmenu',...
-        'string', str1,...
-        'unit', 'normalized',...
-        'position',[0.08, 0.37,0.87,0.02],...
-        'Callback','h=get(gcbo,''userdata'');type=get(gcbo,''value'');spmd_MDTS_plot(h,type);',...
-        'value',1,...
-        'userdata',f,...
-        'FontName',PF.times,'FontWeight','Normal','FontAngle','Normal',...
+    uicontrol(f,...
+        'Style','popupmenu',...
+        'String', str1,...
+        'Units', 'normalized',...
+        'Position',[0.08, 0.37,0.87,0.02],...
+        'Callback',@spmd_MDTS_plot,...
+        'Value',1,...
+        'UserData',f,...
+        'FontName',PF.times,...
+        'FontWeight','Normal',...
+        'FontAngle','Normal',...
         'FontSize',FS(9),...
-        'Interruptible','on','Enable','on',...
+        'Interruptible','on',...
+        'Enable','on',...
         'ForegroundColor','b',...
         'Tag','UiTS');
-    
     
 end
 
 spm('pointer','arrow');
 
-%=============================================================
+
+%==========================================================================
 %                 S U B F U N C T I O N S
-%=============================================================
+%==========================================================================
 function D = get_data(xSPM,SS,xyz)
-%-------------------------------------------------------------------------
+%--------------------------------------------------------------------------
 % Calculate the necessary time series quantities for model detail window.
-%-------------------------------------------------------------------------
+%--------------------------------------------------------------------------
 global diagV;
 global bV;
 global vV;
 global D;
 
 %- set the variables
-%-------------------------------------------------------------------
+%--------------------------------------------------------------------------
 xX      = SS.xX;
 VY      = SS.VY;
 Exp     = SS.Exp;
@@ -309,7 +311,7 @@ nScan   = length(VY);
 VResMS  = xSPM.VResMS;
 
 %-Check and set data name matrix.
-%--------------------------------------------------------------------
+%--------------------------------------------------------------------------
 if isempty(diagV)
     diagV = VY; % Assume the filehandles are valid
 end
@@ -330,17 +332,17 @@ if isempty(vV)
     vV = spm_vol(VResMS); %-get the variance from ResMS.img
 end
 
-%------------------------------------------------------------------
+%--------------------------------------------------------------------------
 %-Get the data at the current voxel
 %-Get all the necessary information for the temporal detail plots,
 % including the raw data, drift, residuals,... etc.
-%------------------------------------------------------------------
+%--------------------------------------------------------------------------
 Y    = spm_get_data(diagV,xyz);  % Don't apply gSF! Assume already set
 beta = spm_get_data(bV,xyz);
 sigs = spm_get_data(vV,xyz);
 
 %-Get the high-pass filters matrix and design matrix.
-%----------------------------------------------------------------------
+%--------------------------------------------------------------------------
 X1 = xX.X;  % Just signal of interest
 X  = xX.X;  % Full X, to be appended with drift terms
 if isstruct(xX.K)
@@ -351,7 +353,7 @@ if isstruct(xX.K)
         nH  = size(KH,2);       % Number of HP bases
         
         %- Zero pad to account for other sessions
-        %-------------------------------------------------------------
+        %------------------------------------------------------------------
         KH     = [zeros(nPS,nH); full(KH); zeros(nScan-nPS-nSS,nH)];
         X = [X KH];
         nPS    = nPS + nSS;
@@ -360,7 +362,7 @@ end
 
 X0 = X(:,size(X1,2)+1:end);  % Just drift terms
 
-%----------------------------------------------------------------------
+%--------------------------------------------------------------------------
 %
 % This should work for drift terms
 %
@@ -379,7 +381,7 @@ X0 = X(:,size(X1,2)+1:end);  % Just drift terms
 %
 %
 % Doesn't work for coloring/temporal smoothing!
-%----------------------------------------------------------------------
+%--------------------------------------------------------------------------
 W     = xX.W;                    %-Get whitening/Weighting matrix
 
 H2    = W*X*pinv(W*X); %- Calculate the Hat matrix for whitened data
@@ -425,9 +427,9 @@ Yh1  = Yh1W - mean(Yh1W);
 
 LRes = nScan;
 
-%----------------------------------------------------------------------
+%--------------------------------------------------------------------------
 %set up the data structure for the residual plots and time series plots.
-%----------------------------------------------------------------------
+%--------------------------------------------------------------------------
 % D.data = Vector of data
 % D.desp = Description of data
 % D.help = Tooltip help string
@@ -501,17 +503,16 @@ D(13).desp = 'Fitted';
 D(13).help = 'Fitted data of full model, including the drift.';
 D(13).abline= [];
 
-return
 
 function h = SetWindow(t,xyz,xyzmm)
-%----------------------------------------------------------------------
+%==========================================================================
 % SetWindow: set up the temporal detail window.
-%
+%==========================================================================
 % FORMAT SetWindow(t,xyz)
 %  t: current temporal position
 %  xyz: most recent spatial position
 %  The output is temporal detail window, Tagged "SpatempFig"
-%----------------------------------------------------------------------
+%--------------------------------------------------------------------------
 h = findobj('Tag','SPMd_MD');
 if isempty(h)
     h = figure(...
@@ -527,4 +528,32 @@ end
 set(h,'Name',sprintf('Model Detail: Voxel %d,%d,%d (%.1fmm,%.1fmm,%.1fmm)  Scan %d',...
     round(xyz),xyzmm,round(t)));
 
-return
+
+function spmd_MDTS_plot(varargin)
+%==========================================================================
+% Draw time series plots for model detail
+%==========================================================================
+% h    - figure handle
+% type - which one the user specified
+%        1- whitened residual
+%        2- raw residual
+
+type = get(gcbo,'UserData');
+
+global D;
+ht = findobj(gcbf,'Tag','TS_in_MD_plot');
+ht = sort(ht);
+
+if type==1
+    % draw time series plots for whitened residual
+    spmd_mtsview('update',ht,...
+        [D(4:6).data],{D(4:6).desp},...
+        [D(9).data D(3).data ],{D(9).desp D(3).desp});
+    
+else
+    % draw time series plots for raw residual
+    spmd_mtsview('update',ht,...
+        [D(11:13).data],{D(11:13).desp},...
+        [D(9).data D(10).data ],{D(9).desp D(10).desp});
+    
+end
