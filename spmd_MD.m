@@ -40,26 +40,9 @@ function spmd_MD(varargin)
 %__________________________________________________________________________
 % @(#)spmd_MD.m
 
-% ______________________________Function Called __________________________
-%
-%      spm
-%      spm_input
-%      spm_platform
-%      spmd_orthviews
-%      spmd_mtsview
-%      spmd_getTS
-%      spm_figure
-%      spmd_MD_plot
-%      spm_vol
-%      spm_sp
-%      spm_filter
-%      get_data  (internal)
-%      SetWindow (internal)
-%_________________________________________________________________________
 
 spm('Pointer','watch');
 global TimeCurs
-
 
 %=============================================================
 %-Find the spatial position
@@ -352,10 +335,9 @@ end
 %-Get all the necessary information for the temporal detail plots,
 % including the raw data, drift, residuals,... etc.
 %------------------------------------------------------------------
-Y    = spmd_getTS(diagV,xyz(1),xyz(2),xyz(3));  % Don't apply gSF! Assume
-% already set
-beta = spmd_getTS(bV,xyz(1),xyz(2),xyz(3));
-sigs = spmd_getTS(vV,xyz(1),xyz(2),xyz(3));
+Y    = spm_get_data(diagV,xyz);  % Don't apply gSF! Assume already set
+beta = spm_get_data(bV,xyz);
+sigs = spm_get_data(vV,xyz);
 
 %-Get the high-pass filters matrix and design matrix.
 %----------------------------------------------------------------------
