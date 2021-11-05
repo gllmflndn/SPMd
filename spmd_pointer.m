@@ -14,12 +14,8 @@ function Ind = spmd_pointer(varargin)
 
 
 global TimeCurs
-global SPMd_defs
 
-set(gcf,'DoubleBuffer', 'on'); %- elimate flash
-
-if isempty(SPMd_defs), spmd_defaults; end
-MaxClkDist = SPMd_defs.MaxClkDist;
+MaxClkDist = 0.03;
 
 if nargin==0; end                                    %- do nothing
 

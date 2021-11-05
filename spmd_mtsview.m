@@ -37,8 +37,6 @@ function varargout = spmd_mtsview(TR,varargin)
 %      MakeAxesPos (internal)
 %------------------------------------------------------------------------
 
-global SPMd_defs;
-
 FigPos = [];
 
 if (~isempty(TR))
@@ -83,8 +81,8 @@ XlimTR  = [0.5 nTR+0.5];
 if ~isempty(TR), XlimSec = ([0.5 nTR+0.5]-1)*TR; end
 
 AxHnd = zeros(nTS,2);
-MarkerSize = SPMd_defs.MarkerSize;
-Marker      = SPMd_defs.Marker;
+MarkerSize = 3;
+Marker      = 'o';
 
 for i = 1:nTS
     TS = TSs{i};

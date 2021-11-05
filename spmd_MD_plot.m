@@ -27,9 +27,6 @@ function spmd_MD_plot(h,type,D)
 %        plot_res (internal)
 % ________________________________________________________________________
 
-global SPMd_defs
-global TimeCurs
-
 if nargin < 3
     if(iscell(h))
         h = celldisp(h);

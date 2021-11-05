@@ -40,10 +40,8 @@ SetWindow;
 %-Set the print button at the top of the window to print the window.
 %------------------------------------------------------------------------
 
-global SPMd_defs;
-
-Marker     = SPMd_defs.Marker;     %-Specify marker size and marker style
-MarkerSize = SPMd_defs.MarkerSize;
+Marker     = 3;     %-Specify marker size and marker style
+MarkerSize = 'o';
 fg = spm_figure('GetWin','SPMd_SS');
 
 P     = get(fg,'Position'); %P  = P(3:4);	% Figure dimensions {pixels}

@@ -76,31 +76,8 @@ function spm_diagnosis(varargin)
 % Reference:
 % Luo, W-L and Nichols T. E. (2002) Diagnosis and Exploration of
 % Massively Univariate fMRI Models. NeuroImage,19:1014-1032, 2003
-%_________________________________________________________________________
+%__________________________________________________________________________
 % %W% %E%
-
-% ______________________________Function Called ___________________________
-%      spm
-%      spm_platform
-%      spm_figure
-%      spm_str_manip
-%      spmd_MkResid
-%      spm_select
-%      spm_results_ui
-%      spmd_comp_MS
-%      spmd_comp_SS
-%      spmd_MD
-%      spmd_MS
-%      spmd_SS
-%      spmd_SD
-%      get_MS_imgs (internal)
-%      get_SS_TS   (internal)
-%_________________________________________________________________________
-%
-
-%-Load defaults
-spm_defaults
-spmd_defaults
 
 %-Condition arguments
 %-----------------------------------------------------------------------
