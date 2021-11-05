@@ -811,58 +811,58 @@ D(2).name	= 'Contrast';
 D(2).label  = 'Contrast';
 D(2).help	= 'Contrast Image of interest';
 
-D(3).fname	= 'Mean.img';
+D(3).fname	= 'Mean.nii';
 D(3).desc	= 'Mean image';
 D(3).name	= 'Mean';
 D(3).label  = 'Mean';
 D(3).help	= 'Mean Image';
 
-D(4).fname	= 'SPMd_ResRMS.img';
+D(4).fname	= 'SPMd_ResRMS.nii';
 D(4).desc	= 'Stdev of residuals';
 D(4).name	= 'ResRMS';
 D(4).label  = 'ResRMS';
 D(4).help	= 'Standard deviation of residuals';
 
-D(5).fname	= 'SPMd_PCorr.img';
+D(5).fname	= 'SPMd_PCorr.nii';
 D(5).desc	= '-log_{10}p DW';
 D(5).name	= 'Corr';
 D(5).label  = 'Correlation';
 D(5).help	= 'Durbin-Watson statistic assessing the autocorrelation of residuals';
 
-D(6).fname	= 'SPMd_PDep.img';
+D(6).fname	= 'SPMd_PDep.nii';
 D(6).desc	= '-log_{10}p CP';
 D(6).name	= 'Dep';
 D(6).label  = 'Dependence';
 D(6).help	= 'Cumulative periodogram assessing white noise assumption of residuals';
 
-D(7).fname	= 'SPMd_PHomo1.img';
+D(7).fname	= 'SPMd_PHomo1.nii';
 D(7).desc	= '-log_{10}p CW: Global';
 D(7).name	= 'Homo1';
 D(7).label  = 'Homo. vs Glob.';
 D(7).help	= ['Cook-Weisberg score statistic assessing constant variance assumption ' ...
     'of residuals wrt residuals wrt global signal'];
 
-D(8).fname	= 'SPMd_PHomo2.img';
+D(8).fname	= 'SPMd_PHomo2.nii';
 D(8).desc	= '-log_{10}p CW: Predicted';
 D(8).name	= 'Homo2';
 D(8).label  = 'Homo. vs h(Y)';
 D(8).help	= ['Cook-Weisberg score statistic assessing constant variance assumption ' ...
     'of residuals wrt predicted response'];
 
-D(9).fname	= 'SPMd_PHomo3.img';
+D(9).fname	= 'SPMd_PHomo3.nii';
 D(9).desc	= '-log_{10}p CW: Active';
 D(9).name 	= 'Homo3';
 D(9).label  = 'Homo. vs X';
 D(9).help	= ['Cook-Weisberg score statistic assessing constant variance assumption ' ...
     'of residuals wrt experimental condition'];
 
-D(10).fname	= 'SPMd_PNorm.img';
+D(10).fname	= 'SPMd_PNorm.nii';
 D(10).desc	= '-log_{10}p SW';
 D(10).name	= 'Norm';
 D(10).label = 'Normality';
 D(10).help	= 'Shapiro-Wilk statistic assessing normality assumption of residuals';
 
-D(11).fname	= 'SPMd_Outl.img';
+D(11).fname	= 'SPMd_Outl.nii';
 D(11).desc	= 'Outlier count';
 D(11).name	= 'Outl';
 D(11).label = 'Outlier';

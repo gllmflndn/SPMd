@@ -27,7 +27,7 @@ switch lower(Action)
         % spmd_SptlBar('create',fig)
         
         if nargin<2
-            if any(get(0,'Children'))
+            if ~isempty(get(0,'Children'))
                 F=gcf;
             else
                 F='';

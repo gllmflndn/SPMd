@@ -36,7 +36,6 @@ elseif nargin==1
     fg = spm_figure('Findwin','Graphics');
     if isempty(fg)
         fg=spm_figure('Create','Graphics');
-        set(gcf,'DoubleBuffer','on'); %- eliminate flash
         if isempty(fg)
             error('Cant create graphics window');
         end
@@ -53,7 +52,7 @@ elseif nargin==1
     for ij=1:mn
         i  = 1-h*(floor((ij-1)/n)+1);
         j  = w*rem(ij-1,n);
-        handle(ij) = spm_orthviews('Image', images(ij,:),...
+        handle(ij) = spm_orthviews('Image', deblank(images(ij,:)),...
             [j+ds/2 i+ds/2 w-ds h-ds]);
         if ij==1, spm_orthviews('Space'); end
     end
@@ -66,7 +65,6 @@ elseif nargin>1
     fg = spm_figure('Findwin',Tag);
     if isempty(fg)
         fg=spm_figure('Createwin',Tag);
-        set(gcf,'DoubleBuffer','on');       %-eliminate flash
         spmd_SptlBar;
         if isempty(fg)
             error('Cant create graphics window');
@@ -84,7 +82,7 @@ elseif nargin>1
     for ij=1:mn
         i  = 1-h*(floor((ij-1)/n)+1);
         j  = w*rem(ij-1,n);
-        handle(ij) = spmd_orthviews('fig',fg,'Image', images(ij,:),[j+ds/2 i+ds/2 w-ds h-ds]);
+        handle(ij) = spmd_orthviews('fig',fg,'Image', deblank(images(ij,:)),[j+ds/2 i+ds/2 w-ds h-ds]);
         if ij==1, spmd_orthviews('fig',fg,'Space'); end
     end
     

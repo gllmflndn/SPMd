@@ -198,7 +198,7 @@ function varargout = spmd_orthviews(action,varargin)
 
 spm('Pointer','watch');
 
-if nargin == 0, action = ''; end;
+if nargin == 0, action = ''; end
 action = lower(action);
 
 
@@ -567,10 +567,10 @@ for i=valid_handles(st,handle)
   end
   st.vols{i}.cbar = ax;
   
-  tmp = sprintf('Cbar-%d-%d',st.fig,i);
+  tmp = sprintf('Cbar-%d-%d',st.fig.Number,i);
   h = uicontextmenu('Tag',tmp,'UserData',ax,'Parent',st.fig);
   tmp = num2str(i);
-  fs = num2str(st.fig); % This will break for noninteger figure num!!!!
+  fs = num2str(st.fig.Number); % This will break for noninteger figure num!!!!
   uimenu(h,'Label','Adjust intensity window...')
   uimenu(h,'Separator','on','Label','Set max',...
 	 'CallBack',['spmd_orthviews(''fig'',' fs ',''clickcolorbar'',' tmp ',''max'');'],...
@@ -813,11 +813,11 @@ end;
 ii = 1;
 while ~isempty(st.vols{ii}), ii = ii + 1; end;
 
-fs = num2str(st.fig); % This will break for noninteger figure num!!!!
-DeleteFcn = ['spmd_orthviews(''fig'',' fs ',''Delete'',' num2str(ii) ');'];
+%fs = num2str(st.fig); % This will break for noninteger figure num!!!!
+DeleteFcn = ''; %@() spmd_orthviews('fig',st.fig,'Delete',ii);
 V.ax = cell(3,1);
 for i=1:3,
-  ax = axes('Visible','off','DrawMode','fast','Parent',st.fig,'DeleteFcn',DeleteFcn,...
+  ax = axes('Visible','off','Parent',st.fig,'DeleteFcn',DeleteFcn,...
 	    'YDir','normal');
   d  = image(0,'Tag','Transverse','Parent',ax,...
 	     'DeleteFcn',DeleteFcn);
@@ -872,8 +872,7 @@ for i=valid_handles(st,1:24),
     skx = s*(Dims(1)+Dims(2))*0.02;
   end;
   
-  fs = num2str(st.fig); % This will break for noninteger figure num!!!!
-  DeleteFcn = ['spmd_orthviews(''fig'',' fs ',''Delete'',' num2str(i) ');'];
+  DeleteFcn = @() spmd_orthviews(fig,fs,'Delete',i);
   
   % Transverse
   set(st.vols{i}.ax{1}.ax,'Units','pixels', ...
@@ -915,7 +914,7 @@ if isstruct(vol),
   mx = -Inf;
   for i=1:vol.dim(3),
     tmp = spm_slice_vol(vol,spm_matrix([0 0 i]),vol.dim(1:2),0);
-    imx = max(tmp(find(finite(tmp))));
+    imx = max(tmp(find(isfinite(tmp))));
     if ~isempty(imx),mx = max(mx,imx);end
   end;
 else,
@@ -930,7 +929,7 @@ if isstruct(vol),
   mn = Inf;
   for i=1:vol.dim(3),
     tmp = spm_slice_vol(vol,spm_matrix([0 0 i]),vol.dim(1:2),0);
-    imn = min(tmp(find(finite(tmp))));
+    imn = min(tmp(find(isfinite(tmp))));
     if ~isempty(imn),mn = min(mn,imn);end
   end;
 else,
@@ -1237,7 +1236,7 @@ for i = valid_handles(st,arg1),
       imgs = imgs*scal+dcoff;
     end;
     
-    fs = num2str(st.fig); % This will break for noninteger figure num!!!!
+    fs = num2str(st.fig.Number); % This will break for noninteger figure num!!!!
     xx = gcbf;
     if (~isempty(xx) & xx == findobj('Tag','Model Summary')),
       callback = ['spmd_orthviews(''fig'',' fs ',''Reposition'');','spmd_orthviews(''fig'',' fs ',''ClickAction'');'];
