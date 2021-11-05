@@ -1,37 +1,23 @@
 function [stat,p,coef] = spmd_stat(action,res,X,para,df)
-% calculate
-%  1. Dubin Watson statistic
-%  2. Cook Weisberg score statistic
-%  3. Shapiro-Wilk satatistic
-%  4. Proportion of outlier
-%  5. Cumulative periodogram statistic
-% _________________________________________________________________________
-% FORMAT spmd_stat(action,res,x,para)
-%     action - option
-%     res  - residual data
-%     X    - design matrix
-%     Para - parameters
-%     df   - degree of freedom of error
-% _________________________________________________________________________
-% @(#)spmd_stat.m	1.4 Wen-Lin Luo 04/06/16
-
-%____________________ Function called _____________________________________
+% Compute diagnostic statistics
+% FORMAT [stat,p,coef] = spmd_stat(action,res,x,para,df)
+% action - statistic (see list below)
+% res    - residual data
+% X      - design matrix
+% para   - parameters
+% df     - degree of freedom of error
 %
-%     spm_detrend
-%     spm_Xcdf
-%     spm_invNcdf
-%     spm_Ncdf
-%     spm_Icdf
+% The available statistics are:
+%  1. Durbin-Watson statistic          'dw'
+%  2. Cook-Weisberg score statistic    'score'
+%  3. Shapiro-Wilk satatistic          'sw'
+%  4. Proportion of outlier            'outl'
+%  5. Cumulative periodogram statistic 'cp'
 %__________________________________________________________________________
-
-%load SPM
-%df = SPM.xX.erdf;
 
 [nScan, nVox] = size(res);
 
-if strmatch(action,'sw')
-    
-else
+if ~strcmpi(action,'sw')
     if size(X,1) ~= nScan
         error(['The length of the residuals and design matrix must be the' ...
             ' same!']);
@@ -43,9 +29,9 @@ ResSS = sum(res.^2);
 switch lower(action)
     
     case 'dw'
-        %------------------------------------------------------------------
-        % Durbin Watson statistics
-        %------------------------------------------------------------------
+        %==================================================================
+        % Durbin-Watson statistics
+        %==================================================================
         if isempty(para)
             %--------------------------------------------------------------
             % Calculate the approximate distribution parameters of D
@@ -78,14 +64,15 @@ switch lower(action)
         p	 = p+(p==0)*eps;
         p	 = -log10(p);
         stat = {stat};
+        
     case 'score'
-        %------------------------------------------------------------------
+        %==================================================================
         % Score test / Cook Weisberg score statistic
-        %------------------------------------------------------------------
+        %==================================================================
         SSr   = nScan*(res.^2)*(spdiags((ResSS.^(-1))',0,nVox,nVox));
         
         meanSSr = mean(SSr);
-        [nrowSSr ncolSSr] = size(meanSSr);
+        [nrowSSr, ncolSSr] = size(meanSSr);
         
         if ncolSSr > 1
             SYY	= sum((SSr-repmat(meanSSr,nScan,1)).^2); %-scaled squared residual
@@ -98,11 +85,11 @@ switch lower(action)
         %------------------------------------------------------------------
         % regress the scaled squared residual on possible regressors
         %------------------------------------------------------------------
-        if isempty(coef),
+        if isempty(coef)
             Rres  = SSr-X*pinv(X)*SSr;
             %def   = size(X,2)-1;
             def   = max(1,size(X,2)-1); %add Tom's change
-        elseif coef == 1,
+        elseif coef == 1
             X     = spm_detrend(X);
             SSr   = spm_detrend(SSr);
             
@@ -129,9 +116,9 @@ switch lower(action)
         stat = {stat};
         
     case 'sw'
-        %------------------------------------------------------------------
-        %-For Shapiro-Wilks Normality Test
-        %------------------------------------------------------------------
+        %==================================================================
+        %-Shapiro-Wilks Normality Test
+        %==================================================================
         if isempty(para)
             %--------------------------------------------------------------
             % Calculate necessary coefficient for Shapiro-Wilks test
@@ -153,9 +140,9 @@ switch lower(action)
             SWa = SWa./(SWa*SWa').^0.5;
             
             %
-            % Calculate some constants for Approximation for Significance level
-            % of W: lambda, mean and SD for the transformation of W
-            % poly = log(nScan)-5;     % for sample size greater than 20, d=5
+            % Calculate some constants for Approximation for Significance
+            % level of W: lambda, mean and SD for the transformation of W
+            % poly = log(nScan)-5;   % for sample size greater than 20, d=5
             %--------------------------------------------------------------
             SWcoeff1 = [0.002989646 0.00879701 -0.0241665 0 0.318828 0.480385];
             SWcoeff2 = [-0.01504614 -0.03513666 0.1066339 -0.04183209...
@@ -177,47 +164,48 @@ switch lower(action)
         sRes  = sort(res);
         WRes  = (coef{1}*sRes).^2./sum((res-repmat(mean(res),nScan,1)).^2);
         
-        TWRes = (1-WRes).^coef{2};	   %-approximate normalizing
-        % transformation of W
-        stat  = (TWRes-coef{3})./coef{4};	   %-standard normal deviate for
-        % transformation of W
-        p     = 1-spm_Ncdf(stat,0,1);  %-Shapiro-Wilks probability
+        TWRes = (1-WRes).^coef{2};         %-approximate normalizing
+                                           % transformation of W
+        stat  = (TWRes-coef{3})./coef{4};  %-standard normal deviate for
+                                           % transformation of W
+        p     = 1-spm_Ncdf(stat,0,1);      %-Shapiro-Wilks probability
         p     = p+(p==0)*eps;
         p     = -log10(p);
         stat = {stat};
         
     case 'outl'
-        %------------------------------------------------------------------
+        %==================================================================
         %-outlier count
-        %------------------------------------------------------------------
+        %==================================================================
         if isempty(para)
             coef = 3;
         else
             coef = para;
         end
         
-        MSE	= ResSS./df;		                %-Mean squared error
-        Outh	= X*pinv(X);		                %-leverage
-        Outh	= diag(Outh);		                %
-        I_null= (1-Outh)<sqrt(eps);                   %-Zero variance indicates
-        % null (exact zero) outliers
-        Outh(I_null)=0;                               %-Residual zero, so this
-        % can be whatever
-        Sres	= res.*((1-Outh)*MSE).^(-0.5);    %-standardized residual
-        Iout  = (abs(Sres) > coef);	                %-index of outliers
+        MSE	   = ResSS./df;                   %-Mean squared error
+        Outh   = X*pinv(X);                   %-leverage
+        Outh   = diag(Outh);
+        I_null = (1-Outh)<sqrt(eps);          %-Zero variance indicates
+                                              % null (exact zero) outliers
+        Outh(I_null) = 0;                     %-Residual zero, so this
+                                              % can be whatever
+        Sres   = res.*((1-Outh)*MSE).^(-0.5); %-standardized residual
+        Iout   = (abs(Sres) > coef);	      %-index of outliers
         
         %-spatial outlier count
         %------------------------------------------------------------------
-        p     = 1-spm_Icdf(sum(Iout),nScan,2*(1-spm_Ncdf(coef)));
-        p     = p+(p==0)*eps;
-        p     = -log10(p);
+        p      = 1 - spm_Icdf(sum(Iout),nScan,2*(1-spm_Ncdf(coef)));
+        p      = p + (p==0)*eps;
+        p      = -log10(p);
         
         %-temporal outlier count
-        stat = {sum(Iout) sum(Iout,2)};
+        stat  = {sum(Iout) sum(Iout,2)};
+        
     case 'cp'
-        %------------------------------------------------------------------
+        %==================================================================
         %-cumulative periodogram
-        %------------------------------------------------------------------
+        %==================================================================
         nVar = rank(X);
         
         if isempty(para)

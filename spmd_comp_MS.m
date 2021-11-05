@@ -1,27 +1,25 @@
 function spmd_comp_MS(SPM,varargin)
-% spmd_comp_MS: compute the diagnosis statistics for general linear model
+% Compute diagnosis statistics for general linear model
 % FORMAT spmd_comp_MS
 % FORMAT spmd_comp_MS(xSPM,varargin)
-%  xSPM      - all parameters from SPM.mat
-%  varargin - cell arrary which contains statistics' name
-% __________________________________________________________________________
+%  xSPM     - all parameters from SPM.mat
+%  varargin - cell arrary of statistics' name
+%__________________________________________________________________________
 %
 % There are three assumptions for general linear model: independence,
-% constant variance, and normality. The diagnosis statistics computed
-% here test these three assumptions at every voxel and thus create the
-% diagnosis images for spatial summary viewer in the SPMd toolbox.
+% constant variance, and normality. The diagnosis statistics computed here
+% test these three assumptions at every voxel and thus create the diagnosis
+% images for spatial summary viewer in the SPMd toolbox.
 %
-% spmd_comp_MS is main function to compute all diagnosis statistics for
-% general linear model in the spatioal summary viewer. Before using this
+% spmd_comp_MS is the main function to compute all diagnosis statistics for
+% general linear model in the spatial summary viewer. Before using this
 % function, output files, SPM.mat, from SPM should exist in the current
-% directory for the calculation of statistics
-% __________________________________________________________________________
+% directory for the calculation of statistics.
+%__________________________________________________________________________
 %
 % The output of spmd_comp_MS takes the form of an SPMd_(Diagnosis).mat of
-% diagnosis statistics, and 'double' diagnostic images of the statistics
-% and corresponding log10(P-value).
-%
-%
+% diagnosis statistics, and diagnostic images of the statistics and
+% corresponding log10(P-value).
 %
 % SPMd_(Diagnosis).mat files SPMd_P(Diagnosis).mat - diagnosis statistics
 % SPMd_Corr SPMd_Pcorr
@@ -43,82 +41,62 @@ function spmd_comp_MS(SPM,varargin)
 % SPMd_Outl  SPMd_Poutl
 %            - cellstr of image filename for Spatial outlier proportion
 %
-% _________________________________________________________________________
+%__________________________________________________________________________
 %
 %
-% SPMd_Corr.{img,hdr} SPMd_PCorr.{img,hdr}    -Durbin_Watson statistic
-% These are 32-bit (double images of the Durbin-Watson statistic and
+% SPMd_Corr.nii SPMd_PCorr.nii    -Durbin_Watson statistic
+% These are images of the Durbin-Watson statistic and corresponding
+% log10(P-value). This statistic is used to test the assumption of
+% independence. Voxels outside the analysis mask are given value NaN.
+%
+% SPMd_Dep.nii SPMd_PDep.nii      -Cumulative periodogram statistic
+% These are images of the cumulative periodogram statistic and
 % corresponding log10(P-value). This statistic is used to test the
-% assumption of independence. Voxels outside the analysis mask are
-% given value NaN.
+% non-AR(1) correlation structure. Voxels outside the analysis Mask are
+% given NaN.
 %
-% SPMd_Dep.{img,hdr} SPMd_PDep.{img,hdr}      -Cumulative periodogram
-%                                              statistic
-% These are 32-bit (double) images of the cumulative periodogram
-% statistic and corresponding log10(P-value). This statistic is used to
-% test the non-AR(1) correlation structure. Voxels outside the analysis
-% Mask are given NaN.
+% SPMd_Homo1.nii SPMd_PHomo1.nii  -Cook-Weisberg score statistic
+% These are images of the Cook-Weisberg score statistic with respect to
+% experimental matrix and corresponding log10(P-value). This is used to
+% test if the residuals depend on design matrix. Voxels outside the
+% analysis mask are given value NaN.
 %
-% SPMd_Homo1.{img,hdr} SPMd_PHomo1.{img,hdr}  -Cook-Weisberg score
-%                                              statistic
-% These are 32-bit (double) images of the Cook-Weisberg score statistic
-% with respect to experimental matrix and corresponding log10(P-value).
-% This is used to test if the residuals depend on design matrix. Voxels
-% outside the analysis mask are given value NaN
+% SPMd_Homo2.nii SPMd_PHomo2.nii  -Cook-Weisberg score statistic
+% These are images of the Cook-Weisberg score statistic with respect to
+% predicted response and corresponding log10(P-value). This is used to test
+% if the residuals depend on predicted response. Voxels outside the
+% analysis mask are given value NaN.
 %
-% SPMd_Homo2.{img,hdr} SPMd_PHomo2.{img,hdr}  -Cook-Weisberg score
-%                                              statistic
-% These are 32-bit (double) images of the Cook-Weisberg score statistic
-% with respect to  predicted response and corresponding log10(P-value).
-% This is used to test if the residuals depend on predicted response.
-% Voxels outside the analysis mask are given value NaN
+% SPMd_Homo3.nii SPMd_PHomo3.nii  -Cook-Weisberg score statistic
+% These are 3images of the Cook-Weisberg score statistic with respect to
+% global signal and corresponding log10(P-value). This is used to test if
+% the residuals depend on global signal. Voxels outside the analysis mask
+% are given value NaN.
 %
-% SPMd_Homo3.{img,hdr} SPMd_PHomo3.{img,hdr}  -Cook-Weisberg score
-%                                              statistic
-% These are 32-bit (double) images of the Cook-Weisberg score statistic
-% with respect to  global signal and corresponding log10(P-value).
-% This is used to test if the residuals depend on global signal.
-% Voxels outside the analysis mask are given value NaN
+% SPMd_Norm.nii SPMd_PNorm.nii    -Shapiro-Wilk statistic
+% These are images of the Shapiro-Wilk statistic and corresponding
+% log10(P-value). This statistic is used to test the assumption of
+% normality. Voxels outside the analysis mask are given value NaN.
 %
-% SPMd_Norm.{img,hdr} SPMd_PNorm.{img,hdr}    -Shapiro-Wilk statistic
-% These are 32-bit (double) images of the Shapiro-Wilk statistic and
-% corresponding log10(P-value). This statistic is used to test the
-% assumption of normality. Voxels outside the analysis mask are given
-% value NaN.
+% SPMd_Outl.nii SPMd_POutl.nii    -Spatial outlier proportion
+% These are images of the spatial outlier proportion and corresponding
+% log10(P-value). Voxels outside the analysis mask are given value NaN.
 %
-% SPMd_Outl.{img,hdr} SPMd_POutl.{img,hdr}    -Spatial outlier proportion
-% These are 32-bit (double) images of the spatial outlier proportion and
-% corresponding log10(P-value). Voxels outside the analysis mask are
-% given value NaN.
-%
-% SPMd_ResRMS.{img,hdr} SPMd_PResRMS.{img,hdr}-sqrt(MSE)
-% These are 32-bit (double) images of the spatial square root of sum of
-% squared mean residuals and corresponding log10(P-value). Voxels outside
-% the analysis mask are given value NaN.
-% ________________________________________________________________________
+% SPMd_ResRMS.nii SPMd_PResRMS.nii -sqrt(MSE)
+% These are images of the spatial square root of sum of squared mean
+% residuals and corresponding log10(P-value). Voxels outside the analysis
+% mask are given value NaN.
+%__________________________________________________________________________
 %
 % Reference:
 % Luo, W-L and Nichols T. E. (2002) Diagnosis and Exploration of
 % Massively Univariate fMRI Models. NeuroImage,19:1014-1032, 2003
-% _________________________________________________________________________
-% @(#)spmd_comp_MS.m
+%__________________________________________________________________________
 
-% ______________________________Function Called __________________________
-%      spm
-%      spm_input
-%      spm_str_manip
-%      spm_select
-%      spm_spm
-%      spm_type
-%      spm_sp
-%      spm_create_vol
-%      spmd_stat
-%      spm_unlink
-%_________________________________________________________________________
 
 %-Say hello
 %-----------------------------------------------------------------------
-Finter   = spm('FigName','Stats: estimation...'); spm('Pointer','Watch')
+Finter   = spm('FigName','Stats: estimation...');
 
 %-Get SPM.mat if necessary
 %-----------------------------------------------------------------------
@@ -137,7 +115,6 @@ catch
     helpdlg({	'Please assign data to this design',...
         'Use fMRI under model specification'});
     spm('FigName','Stats: done',Finter);
-    spm('Pointer','Arrow')
     return
 end
 
@@ -156,7 +133,6 @@ if flagSPMnames
     if length(SPM.Sess) > 1
         helpdlg({'OOPs! SPMd can not analysis multi-session data currently'});
         spm('FigName','Stats: done',Finter);
-        spm('Pointer', 'Arrow');
         return
     end
 end
@@ -169,7 +145,7 @@ if exist(fullfile('.','SPMd.mat'),'file') == 2
         'Existing results will be appended!'};
     abort = spm_input(str,1,'bd','stop|continue',[1,0],1);
     if abort
-        spm('FigName','Stats: done',Finter); spm('Pointer','Arrow')
+        spm('FigName','Stats: done',Finter);
         return
     else
         str = sprintf('Appending old results\n\t (pwd = %s) ',pwd);
@@ -253,10 +229,9 @@ xX.pKX  = spm_sp('x-',xX.xKXs);				% projector
 %=======================================================================
 VY       = SPM.xY.VY;
 M        = VY(1).mat;
-DIM      = VY(1).dim(1:3)';
+DIM      = VY(1).dim(1:3);
 xdim     = DIM(1); ydim = DIM(2); zdim = DIM(3);
-%YNaNrep  = spm_type(VY(1).dim(4),'nanrep'); for SPM2
-YNaNrep  = VY(1).dt(2);                     %- for SPM5
+YNaNrep  = VY(1).dt(2);
 
 %-Maximum number of residual images for smoothness estimation
 %-----------------------------------------------------------------------
@@ -270,71 +245,52 @@ nSres    = min(nScan,MAXRES);
 blksz    = ceil(MAXMEM/8/nScan);				%-block size
 nbch     = ceil(xdim*ydim/blksz);				%-# blocks
 
-fprintf('%s%30s\n',repmat(sprintf('\b'),1,30),'...done')        %-#
+fprintf('%s%30s\n',repmat(sprintf('\b'),1,30),'...done')             %-#
 
 %-Initialise output images (unless this is a 1st pass for ReML)
 %=======================================================================
-fprintf('%-40s: %30s','Output images','...initialising')        %-#
+fprintf('%-40s: %30s','Output images','...initialising')             %-#
 
 %-Intialise the name of the mean image
 %-----------------------------------------------------------------------
-%VMean = struct(	'fname',        'Mean.img',...
-%		'dim',		[DIM',spm_type('float32')],...
-%		'mat',		M,...
-%		'pinfo',	[1 0 0]',...
-%		'descrip',      'spmd: Mean');
-VMean = struct(	'fname',        'Mean.img',...
-    'dim',		[DIM'],...                    %- for SPM5
-    'mat',		M,...
-    'pinfo',	[1 0 0]',...
-    'descrip',      'spmd: Mean');
-VMean  = spm_create_vol(VMean,'noopen');
+VMean = struct(...
+    'fname',   'Mean.nii',...
+    'dim',     DIM,...
+    'mat',     M,...
+    'pinfo',   [1 0 0]',...
+    'descrip', 'spmd: Mean');
 
+VMean = spm_data_hdr_write(VMean);
 
 %-Intialise standard deviation of residual image file
 %-----------------------------------------------------------------------
-%VResRMS = struct('fname',       'SPMd_ResRMS.img',...
-%		 'dim',         [DIM',spm_type('float')],...
-%		 'mat',         M,...
-%		 'pinfo',       [1 0 0]',...
-%		 'descrip',     'spmd: ResRMS');
+VResRMS = struct(...
+    'fname',   'SPMd_ResRMS.nii',...
+    'dim',     DIM,...
+    'mat',     M,...
+    'pinfo',   [1 0 0]',...
+    'descrip', 'spmd: ResRMS');
 
-VResRMS = struct('fname',       'SPMd_ResRMS.img',...
-    'dim',         [DIM'],...                   %- for SPM5
-    'mat',         M,...
-    'pinfo',       [1 0 0]',...
-    'descrip',     'spmd: ResRMS');
-VResRMS = spm_create_vol(VResRMS,'noopen');
+VResRMS = spm_data_hdr_write(VResRMS);
 
 %-Intialise diagnostic statistics image files
 %-----------------------------------------------------------------------
-%Vstat(1:nStat) = deal(...
-%        struct(...
-%	'fname',   [],...
-%	'dim',     [DIM',spm_type('float')],...
-%	'mat',	   M,...
-%	'pinfo',   [1 0 0]',...
-%	'descrip', ''));
-
 Vstat(1:nStat) = deal(...
     struct(...
-    'fname',   [],...
-    'dim',     [DIM'],...                             %- for SPM5
+    'fname',   '',...
+    'dim',     DIM,...
+    'dt',      [spm_type('float64'), spm_platform('bigend')],...
     'mat',	   M,...
     'pinfo',   [1 0 0]',...
-    'dt',      [spm_type('float64'), spm_platform('bigend')],...
-    'n',       [1 1],...
-    'descrip', '',...
-    'private', struct));
+    'descrip', ''));
 
 for i = 1:nStat
-    Vstat(i).fname   = sprintf('SPMd_%s.img',stat(i).name);
+    Vstat(i).fname   = sprintf('SPMd_%s.nii',stat(i).name);
     Vstat(i).descrip = sprintf('SPM_Diag: %s',stat(i).help);
     spm_unlink(Vstat(i).fname)
 end
 
-
-Vstat = spm_create_vol(Vstat,'noopen');
+Vstat = spm_data_hdr_write(Vstat);
 
 %-Intialise diagnostic statistics corresponding P-value image files
 %-----------------------------------------------------------------------
@@ -348,25 +304,22 @@ Vstat = spm_create_vol(Vstat,'noopen');
 
 VPstat(1:nStat) = deal(...
     struct(...
-    'fname',	[],...
-    'dim',	[DIM'],...                                 %- for SPM5
-    'mat',	M,...
-    'pinfo',	[1 0 0]',...
+    'fname',   '',...
+    'dim',     DIM,...
     'dt',      [spm_type('float64'), spm_platform('bigend')],...
-    'n',       [1 1],...
-    'descrip', '',...
-    'private', struct));
+    'mat',     M,...
+    'pinfo',   [1 0 0]',...
+    'descrip', ''));
 
 for i = 1:nStat
-    VPstat(i).fname   = sprintf('SPMd_P%s.img',stat(i).name);
+    VPstat(i).fname   = sprintf('SPMd_P%s.nii',stat(i).name);
     VPstat(i).descrip = sprintf('SPM_Diag: %s',stat(i).Pdesp);
     spm_unlink(VPstat(i).fname)
 end
-VPstat = spm_create_vol(VPstat,'noopen');
 
+VPstat = spm_data_hdr_write(VPstat);
 
-
-fprintf('%s%30s\n',repmat(sprintf('\b'),1,30),'...initialised')        %-#
+fprintf('%s%30s\n',repmat(sprintf('\b'),1,30),'...initialised')      %-#
 
 %=======================================================================
 % - F I T   M O D E L   &   W R I T E   P A R A M E T E R    I M A G E S
@@ -396,7 +349,7 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
     CrResI  = [];                       %-normalized residuals
     CrResSS = [];                       %-residual sum of Squares
     
-    for i = 1:nStat,
+    for i = 1:nStat
         stat(i).Cr = [];                %-diagnostic statistic(s)
         stat(i).P  = [];                %-diagnostic statistic(s)
     end
@@ -601,18 +554,12 @@ end
 
 %-close written image files (unless 1st pass)
 %=======================================================================
-fprintf('%s%30s\n',repmat(sprintf('\b'),1,30),'...closing files')  %-#
-
-% Since spm_close_vol is gone in SPM5, we do not need close the files.
-%VMean            = spm_close_vol(VMean);
-%VResRMS          = spm_close_vol(VResRMS);
-%Vstat            = spm_close_vol(Vstat);
-%VPstat           = spm_close_vol(VPstat);
+fprintf('%s%30s\n',repmat(sprintf('\b'),1,30),'...closing files')    %-#
 
 %-Set VResRMS scalefactor as sqrt(1/trRV) (raw voxel data is sqrt(ResSS))
 %-----------------------------------------------------------------------
 VResRMS.pinfo(1) = sqrt(1/xX.trRV);
-VResRMS          = spm_create_vol(VResRMS,'noopen');
+VResRMS          = spm_data_hdr_write(VResRMS);
 
 %-Save remaining results files and analysis parameters
 %=======================================================================
@@ -646,7 +593,7 @@ else
     MS.SPM.swd   = swd;
 end
 
-for i = 1:nStat,
+for i = 1:nStat
     MS.stat(nstat+i)   = stat(i);
     MS.Vstat(nstat+i)  = Vstat(i);		%-Filehandle - statistics
     MS.VPstat(nstat+i) = VPstat(i); 		%-Filehandle - P-value
@@ -682,19 +629,21 @@ end
 %- E N D: Cleanup GUI
 %=======================================================================
 fprintf('%s%30s\n',repmat(sprintf('\b'),1,30),'...done')              %-#
-spm('FigName','Stats: done',Finter); spm('Pointer','Arrow')
+spm('FigName','Stats: done',Finter);
 fprintf('%-40s: %30s\n','Completed',spm('time'))                      %-#
 %fprintf('...use the results section for assessment\n\n')             %-#
-return
 
+
+%==========================================================================
+% function D = get_diag_stat(SPM)
+%==========================================================================
 function D = get_diag_stat(SPM)
-%=======================================================================
 % Build up the menu structure of the all diagnostic and exloratory
 % statistics.
-%=======================================================================
+
 xX     = SPM.xX;
 DesMtx = xX.X;
-[nScan, nVar] = size(DesMtx);
+nScan  = size(DesMtx,1);
 
 % fMRI-specific operations
 if isstruct(xX.K)
@@ -706,7 +655,7 @@ if isstruct(xX.K)
         nH  = size(KH,2); % Number of HP bases
         
         %- Zero pad to account for other sessions
-        %------------------------------------------------------
+        %------------------------------------------------------------------
         KH = [zeros(nPS,nH); full(KH); zeros(nScan-nPS-nSS,nH)];
         DesMtx = [DesMtx KH];
         nPS = nPS + nSS;
@@ -727,7 +676,7 @@ DesMtxB = [ones(nScan,1) DWX]; %full rank design matrix with intercept
 
 BontoA  = DesMtxA*pinv(DesMtxA)*DesMtxB;
 
-if any(any(abs(DesMtxB-BontoA) > 1e-6)) > 0
+if any(any(abs(DesMtxB-BontoA) > 1e-6))
     disp('Space of Design Matrix Not Matched')
 end
 
@@ -838,4 +787,3 @@ D(8).diag     = 'sdr';
 D(8).X        = DesMtx;
 D(8).para     = [];
 D(8).help     = 'Standard deviation of residuals';
-return

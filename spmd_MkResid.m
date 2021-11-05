@@ -1,12 +1,12 @@
 function PstRes = spmd_MkResid(xSPM,Dir)
 % Compute the studentized residuals
-% FORMAT PsRes = spmd_MkResid(xSPM, Dir)
+% FORMAT PstRes = spmd_MkResid(xSPM,Dir)
 % Input
 %  Dir    - Directory of SPM results
 %  xSPM   - Parameters from SPM.mat
 % Output
 %  PstRes - Matrix of filename of (internally) studentized residuals
-% _________________________________________________________________________
+%__________________________________________________________________________
 %
 % The output of this function is the matrix of filename of internally
 % studentized residuals. On the other hand, it creates the studentized
@@ -14,35 +14,21 @@ function PstRes = spmd_MkResid(xSPM,Dir)
 % detail (spatial detail) window.
 %
 % In the calculation of the studentized residuals, drift terms (DCTs) are
-% also accounts.
-% _________________________________________________________________________
+% also taken into account.
+%__________________________________________________________________________
 %
 % This function is modified from MkResid.m by Tom Nichols. The only
 % difference is it only creates internally studentized residuals.
-%
-% _________________________________________________________________________
-% @(#)spmd_MkResid.m	1.1 04/07/08
+%__________________________________________________________________________
 
-% ______________________ Functions called _________________________________
-%
-%           spm_select
-%           spm_vol
-%           spm_type
-%           spm_str_manip
-%           spm_create_image
-%           spm_resss
-%           spm_slice_vol
-%           spm_write_plane
-% _________________________________________________________________________
-
-if (nargin<1)
+if ~nargin
     swd  = spm_str_manip(spm_select(1,'SPM.mat','Select SPM.mat'),'H');
     xSPM = load(fullfile(swd,'SPM.mat'));
     xSPM = xSPM.SPM;
 end
 
-if (nargin<2)
-    Dir = spm_select(1,'dir','Select directory to save the residual images!');
+if nargin < 2
+    Dir = spm_select(1,'dir','Select directory to save the residual images');
 end
 
 if strcmp(spm_str_manip(Dir,'t'),'.')
@@ -79,9 +65,8 @@ VVar   = spm_vol(VResMS);
 X = xX.X;
 W = xX.W;
 
-
-%- Account for filter
-%-------------------------------------------------------
+%-Account for filter
+%--------------------------------------------------------------------------
 DesMtx = xX.X;
 if isstruct(xX.K)
     K = xX.K;
@@ -93,7 +78,7 @@ if isstruct(xX.K)
         nH  = size(KH,2); % Number of HP bases
         
         %- Zero pad to account for other sessions
-        %--------------------------------------------------
+        %------------------------------------------------------------------
         KH = [zeros(nPS,nH); full(KH); zeros(nScan-nPS-nSS,nH)];
         DesMtx = [DesMtx KH];
         nPS = nPS + nSS;
@@ -107,14 +92,13 @@ VRs = VY;
 
 for i=1:nScan
     
-    %- Impliment whatever scaling was done in spm_spm.m
-    %---------------------------------------------------
+    %- Implement whatever scaling was done in spm_spm.m
+    %----------------------------------------------------------------------
     VY(i).pinfo(1:2,:) = VY(i).pinfo(1:2,:)*xGX.gSF(i);
     
-    
     %- Initialize standardized residual images
-    %---------------------------------------------------
-    [pth,nm,xt,vr] = fileparts(deblank(VY(i).fname));
+    %----------------------------------------------------------------------
+    [pth,nm,xt,vr] = spm_fileparts(deblank(VY(i).fname));
     VRs(i).fname = fullfile(Dir,['e' nm xt vr]);
     %  We trust that 'VRs(i).n' is set appropriately
     VRs(i).dt = [spm_type('float32') spm_platform('bigend')];
@@ -124,13 +108,13 @@ for i=1:nScan
 end
 
 %- Make raw residuals (for now, write into files of stdzd res)
-%-----------------------------------------------------
+%--------------------------------------------------------------------------
 H = W*DesMtx*pinv(W*DesMtx);
 I = eye(length(W));
 VRs = spmd_resss(VY,VRs,(I-H)*W,'');
 
 %- Make (internally) standardized residuals
-%-----------------------------------------------------
+%--------------------------------------------------------------------------
 fprintf('Creating (internally)  standardized residual... ')
 hii = diag(H);
 for z=1:VVar.dim(3)
@@ -152,8 +136,7 @@ for z=1:VVar.dim(3)
         % Write out
         VRs(i)  = spm_write_plane(VRs(i),SRes,z);
     end
-end;
-%VRs         = spm_close_vol(VRs);
+end
 for i = 1:length(VRs)
     PstRes{i} = [VRs(i).fname ',' num2str(VRs(i).n(1))];
 end

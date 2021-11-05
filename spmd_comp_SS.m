@@ -2,7 +2,7 @@ function spmd_comp_SS(varargin)
 % Compute all necessary variables for scan summary
 % FORMAT spmd_comp_SS(varargin)
 % varargin - names of variables that users want to calculate
-% _______________________________________________________________________
+% _________________________________________________________________________
 %
 % The output of variables are appended to SPMd_SS
 %
@@ -17,7 +17,7 @@ function spmd_comp_SS(varargin)
 %                               in the actual experiment to the expected outlier
 % Reg. Parameters             - matrix of registration parameters
 % Average periodogram         - average periodogram of raw residuals
-% _______________________________________________________________________
+% _________________________________________________________________________
 %
 % Warnings
 % 1. The realignment file must be there.
@@ -26,38 +26,16 @@ function spmd_comp_SS(varargin)
 %    concatenate them first!
 % 3. Before using this function, users need to run SPM and spmd_comp_MS.m
 %    first.
-% _______________________________________________________________________
+% _________________________________________________________________________
 %
 % Reference:
 % Luo, W-L and Nichols T. E. (2002) Diagnosis and Exploration of
 % Massively Univariate fMRI Models. NeuroImage,19:1014-1032, 2003
-%
 %__________________________________________________________________________
-% @(#)spmd_comp_SS.m
-
-% ______________________________Function Called __________________________
-%      spm_str_manip
-%      spm_select
-%      spm_Ncdf
-%      spm_vol
-%      spm_global
-%      spm
-%      spm_input
-%      spm_Fcdf
-%      spmd_comp_MS
-%      GetExpPred (internal)
-%      GetTOutl   (internal)
-%      GetGlob    (internal)
-%      GetPG      (internal)
-%      GetRegParm (internal)
-%      GetF       (internal)
-%_________________________________________________________________________
 
 
-
-spm_defaults
 %-Check if SPMd_SS.mat in current directory
-%------------------------------------------------------------------------
+%--------------------------------------------------------------------------
 if exist(fullfile('.','SPMd_SS.mat'),'file')==0
     swd = '.';
     if exist(fullfile(swd,'SPM.mat'))~=2
@@ -438,7 +416,7 @@ end
 return
 
 
-function RegPar = GetRegParm(VY)
+function RegPar = GetRegParm(VY,ParmfNm)
 %======================================================================
 %  Get registration parameters if possible
 %======================================================================
@@ -452,7 +430,7 @@ if (nargin<2 || isempty(ParmfNm))
     if (BaseNm(1)=='n'), BaseNm(1) = []; end
     if (BaseNm(1)=='r'), BaseNm(1) = []; end   % Get down to raw filename
     
-    ParmfNm = [ Path '/rp_' BaseNm '.txt' ];
+    ParmfNm = fullfile(Path,['rp_' BaseNm '.txt' ]);
     
 end
 
@@ -463,7 +441,7 @@ if ~exist(ParmfNm)
     
     input = spm_input(str,1,'bd','Yes|No',[1,0]);
     if input
-        ParmfNm = spm_select(1,'.*\.txt$','Select realignment file',Path);
+        ParmfNm = spm_select(1,'.*\.txt$','Select realignment file',{},Path);
     else
         ParmfNm = [];
         fprintf('%-40s: %30s\n\n',...
