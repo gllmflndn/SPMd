@@ -22,7 +22,7 @@ function varargout = spm_diagnosis(varargin)
 % visualization
 %
 % FORMAT spm_diagnosis('sd')
-% Set up GUI for the scan summary window: for both computation and
+% Set up GUI for the scan detail window: for both computation and
 % visualization
 %
 % FORMAT spm_diagnosis('setimg')
@@ -32,8 +32,7 @@ function varargout = spm_diagnosis(varargin)
 % Manipulate the selection
 %
 % FORMAT spm_diagnosis('delete')
-% Delete the objects with input tag or handles within
-% the main menu figure
+% Delete the objects with input tag or handles within the main menu figure
 % _________________________________________________________________________
 %
 % SPMd is a toolbox for the diagnosis for the analysis functional brain
@@ -102,7 +101,7 @@ switch lower(Action)
         
         %-Create figure for SPMd menu
         %------------------------------------------------------------------
-        RectW = [0 0 300 314];
+        RectW = [0 0 400 450];
         Rect0 = spm('WinSize','0',1);
         if all(ismember(Rect0(:),[0 1])), return; end
         Pos   = [Rect0(1)+(Rect0(3)-RectW(3))/2,...
@@ -120,8 +119,7 @@ switch lower(Action)
         
         %-Set up buttons
         %------------------------------------------------------------------
-        hReg = uicontrol(Finter,...
-            'Style','frame',...
+        hReg = uipanel(Finter,...
             'Units','normalized',...
             'Position',[0 0.9 1 0.1],...
             'BackgroundColor',spm('Colour'),...
@@ -294,7 +292,7 @@ switch lower(Action)
         
         %-Require parameters for the GUI figure
         %------------------------------------------------------------------
-        D	  = get_MS_imgs;
+        D     = get_MS_imgs;
         if strcmp(type,'compute')
             D = D(5:end);
             s = 1;
@@ -303,8 +301,8 @@ switch lower(Action)
             s = 2;
         end
         
-        nD	  = length(D);
-        mD	  = ceil((nD+1)/3);
+        nD    = length(D);
+        mD    = ceil((nD+1)/3);
         Lx    = 0.01;
         LX    = 0.32;
         Ly    = 0.01;
@@ -314,8 +312,7 @@ switch lower(Action)
         %------------------------------------------------------------------
         Ypos      = 0.84-((Ly+LY)*mD+Ly);
         Ylength   = (LY+Ly)*mD+Ly;
-        hMS_UI   = uicontrol(Finter,...
-            'Style','Frame',...
+        hMS_UI   = uipanel(Finter,...
             'Tag','hMS_UI',...
             'Units','normalized',...
             'Position',[0.00 Ypos 1.00 Ylength],...
@@ -338,10 +335,10 @@ switch lower(Action)
         
         %-Buttons to select spatial statistical images
         %------------------------------------------------------------------
-        Ch	= [];
+        Ch  = [];
         
         if strcmp(type,'visual')
-            Ch	= [Ch uicontrol(Finter,...
+            Ch  = [Ch uicontrol(Finter,...
                 'Style','checkbox',...
                 'String',D(1).label,...
                 'Min', 0, 'Max',4,...
@@ -354,7 +351,7 @@ switch lower(Action)
                 'UserData',D(1),...
                 'ForegroundColor','k')];
             
-            Ch	= [Ch uicontrol(Finter,...
+            Ch  = [Ch uicontrol(Finter,...
                 'Style','checkbox',...
                 'String',D(2).label,...
                 'Min', 0, 'Max',4,...
@@ -366,7 +363,7 @@ switch lower(Action)
                 'UserData',D(2),...
                 'ForegroundColor','k')];
             
-            Ch	= [Ch uicontrol(Finter,...
+            Ch  = [Ch uicontrol(Finter,...
                 'Style','checkbox',...
                 'String',D(3).label,...
                 'Min', 0, 'Max',4,...
@@ -484,8 +481,8 @@ switch lower(Action)
         %-Require parameters for the GUI figure
         %------------------------------------------------------------------
         D       = get_SS_ts(type);
-        nD	    = length(D);
-        mD	    = ceil((nD+1)/2);
+        nD      = length(D);
+        mD      = ceil((nD+1)/2);
         Lx      = 0.02;
         LX      = 0.47;
         Ly      = 0.01;
@@ -495,8 +492,8 @@ switch lower(Action)
         %------------------------------------------------------------------
         Ypos      = 0.84-((Ly+LY)*mD+Ly);
         Ylength   = (LY+Ly)*mD+Ly;
-        hSS_UI    = uicontrol(Finter,...
-            'Style','Frame','Tag','hSS_UI',...
+        hSS_UI    = uipanel(Finter,...
+            'Tag','hSS_UI',...
             'Units','normalized',...
             'Position',[0.00 Ypos 1 Ylength],...
             'BackgroundColor',spm('Colour'));
@@ -521,7 +518,7 @@ switch lower(Action)
         %-Buttons to select spatial statistical images
         %------------------------------------------------------------------
         %delete(Ch)
-        Ch	= [];
+        Ch  = [];
         if (strcmp(type,'visual'))
             load SPMd_SS;
         end
@@ -635,26 +632,28 @@ switch lower(Action)
     %======================================================================
         % spm_diagnosis('SetImg',varagin)
         
-        Ch	= get(findobj('Tag','Diag Menu'),'UserData');
-        BaseNm	= varargin{1};
+        Ch  = get(findobj('Tag','Diag Menu'),'UserData');
+        BaseNm  = varargin{1};
         
         switch varargin{2}
             
             case 'test'
-                D	= get(Ch.Visual(1),'UserData');
+                D   = get(Ch.Visual(1),'UserData');
                 if get(Ch.Visual(1),'value')
-                    D.fname	= spm_select(1,'spm.*\.img');
+                    [D.fname, sts] = spm_select(1,'spm.*\.nii');
+                    if ~sts, return; end
                 else
-                    D.fname	= '';
+                    D.fname = '';
                 end
                 set(Ch.Visual(1),'UserData',D);
                 
             case 'con'
-                D	= get(Ch.Visual(2),'UserData');
+                D = get(Ch.Visual(2),'UserData');
                 if get(Ch.Visual(2),'value')
-                    D.fname	= spm_select(1,'con.*\.img');
+                    [D.fname, sts] = spm_select(1,'con.*\.nii');
+                    if ~sts, return; end
                 else
-                    D.fname	= '';
+                    D.fname = '';
                 end
                 set(Ch.Visual(2),'UserData',D);
                 
@@ -669,16 +668,16 @@ switch lower(Action)
         
         switch type
             case 'ms_comp'
-                Ch	= get(findobj('Tag','Diag Menu'),'UserData');
+                Ch  = get(findobj('Tag','Diag Menu'),'UserData');
                 Ch    = Ch.Comp;
-                D	    = get_MS_imgs;
-                nD	= length(D);
-                Im	= {};
+                D       = get_MS_imgs;
+                nD  = length(D);
+                Im  = {};
                 
                 for i = 1:nD-4
                     if get(Ch(i),'value')
-                        DI	= get(Ch(i),'UserData');
-                        Im	= {Im{:} DI.name};
+                        DI  = get(Ch(i),'UserData');
+                        Im  = {Im{:} DI.name};
                     end
                 end
                 
@@ -693,18 +692,18 @@ switch lower(Action)
                 
                 
             case 'ms_visual'
-                Ch	= get(findobj('Tag','Diag Menu'),'UserData');
+                Ch  = get(findobj('Tag','Diag Menu'),'UserData');
                 Ch    = Ch.Visual;
-                D	    = get_MS_imgs;
-                nD	= length(D);
-                Im	= {};
-                Ds	= {};
+                D       = get_MS_imgs;
+                nD  = length(D);
+                Im  = {};
+                Ds  = {};
                 
                 for i = 1:nD
                     if get(Ch(i),'value')
-                        DI	= get(Ch(i),'UserData');
-                        Im	= {Im{:},DI.fname};
-                        Ds	= {Ds{:},DI.desc};
+                        DI  = get(Ch(i),'UserData');
+                        Im  = {Im{:},DI.fname};
+                        Ds  = {Ds{:},DI.desc};
                     end
                 end
                 
@@ -715,33 +714,33 @@ switch lower(Action)
                 spmd_MS('Img',1:length(Im),Im,'Desc',1:length(Ds),Ds);
                 
             case 'ss_comp'
-                Ch	= get(findobj('Tag','Diag Menu'),'UserData');
+                Ch  = get(findobj('Tag','Diag Menu'),'UserData');
                 Ch    = Ch.Comp;
-                D	= get_SS_ts('compute');
-                nD	= length(D);
-                Fig	= {};
+                D   = get_SS_ts('compute');
+                nD  = length(D);
+                Fig = {};
                 
                 for i = 1:nD
                     if get(Ch(i),'value')
-                        DI	= get(Ch(i),'UserData');
-                        Fig	= {Fig{:},DI.fname};
+                        DI  = get(Ch(i),'UserData');
+                        Fig = {Fig{:},DI.fname};
                     end
                 end
                 
-                nFig	= length(Fig);
+                nFig    = length(Fig);
                 spmd_comp_SS(Fig{1:nFig});
                 
             case 'ss_visual'
-                Ch	= get(findobj('Tag','Diag Menu'),'UserData');
+                Ch  = get(findobj('Tag','Diag Menu'),'UserData');
                 Ch    = Ch.Visual;
-                D	= get_SS_ts('visual');
-                nD	= length(D);
-                Fig	= {};
+                D   = get_SS_ts('visual');
+                nD  = length(D);
+                Fig = {};
                 
                 for i = 1:nD
                     if get(Ch(i),'value')
-                        DI	= get(Ch(i),'UserData');
-                        Fig	= {Fig{:},DI.fname};
+                        DI  = get(Ch(i),'UserData');
+                        Fig = {Fig{:},DI.fname};
                     end
                 end
                 
@@ -749,7 +748,7 @@ switch lower(Action)
                     spmd_SS
                 end
                 
-                nFig	= length(Fig);
+                nFig    = length(Fig);
                 spmd_SS('ts',{Fig{1:nFig}});
                 
             otherwise
@@ -800,112 +799,112 @@ function D = get_MS_imgs
 % Build the menu structure of all diagnostic and exploratory statistics
 %==========================================================================
 
-D(1).fname	= '';
-D(1).desc	= 'Test statistic image';
-D(1).name 	= 'Test Statistic';
+D(1).fname  = '';
+D(1).desc   = 'Test statistic image';
+D(1).name   = 'Test Statistic';
 D(1).label  = 'Test Stat';
-D(1).help	= 'Hypothesis testing statistics of interest';
+D(1).help   = 'Hypothesis testing statistics of interest';
 
-D(2).fname	= '';
-D(2).desc	= 'Contrast image';
-D(2).name	= 'Contrast';
+D(2).fname  = '';
+D(2).desc   = 'Contrast image';
+D(2).name   = 'Contrast';
 D(2).label  = 'Contrast';
-D(2).help	= 'Contrast Image of interest';
+D(2).help   = 'Contrast Image of interest';
 
-D(3).fname	= 'Mean.nii';
-D(3).desc	= 'Mean image';
-D(3).name	= 'Mean';
+D(3).fname  = 'Mean.nii';
+D(3).desc   = 'Mean image';
+D(3).name   = 'Mean';
 D(3).label  = 'Mean';
-D(3).help	= 'Mean Image';
+D(3).help   = 'Mean Image';
 
-D(4).fname	= 'SPMd_ResRMS.nii';
-D(4).desc	= 'Stdev of residuals';
-D(4).name	= 'ResRMS';
+D(4).fname  = 'SPMd_ResRMS.nii';
+D(4).desc   = 'Stdev of residuals';
+D(4).name   = 'ResRMS';
 D(4).label  = 'ResRMS';
-D(4).help	= 'Standard deviation of residuals';
+D(4).help   = 'Standard deviation of residuals';
 
-D(5).fname	= 'SPMd_PCorr.nii';
-D(5).desc	= '-log_{10}p DW';
-D(5).name	= 'Corr';
+D(5).fname  = 'SPMd_PCorr.nii';
+D(5).desc   = '-log_{10}p DW';
+D(5).name   = 'Corr';
 D(5).label  = 'Correlation';
-D(5).help	= 'Durbin-Watson statistic assessing the autocorrelation of residuals';
+D(5).help   = 'Durbin-Watson statistic assessing the autocorrelation of residuals';
 
-D(6).fname	= 'SPMd_PDep.nii';
-D(6).desc	= '-log_{10}p CP';
-D(6).name	= 'Dep';
+D(6).fname  = 'SPMd_PDep.nii';
+D(6).desc   = '-log_{10}p CP';
+D(6).name   = 'Dep';
 D(6).label  = 'Dependence';
-D(6).help	= 'Cumulative periodogram assessing white noise assumption of residuals';
+D(6).help   = 'Cumulative periodogram assessing white noise assumption of residuals';
 
-D(7).fname	= 'SPMd_PHomo1.nii';
-D(7).desc	= '-log_{10}p CW: Global';
-D(7).name	= 'Homo1';
+D(7).fname  = 'SPMd_PHomo1.nii';
+D(7).desc   = '-log_{10}p CW: Global';
+D(7).name   = 'Homo1';
 D(7).label  = 'Homo. vs Glob.';
-D(7).help	= ['Cook-Weisberg score statistic assessing constant variance assumption ' ...
+D(7).help   = ['Cook-Weisberg score statistic assessing constant variance assumption ' ...
     'of residuals wrt residuals wrt global signal'];
 
-D(8).fname	= 'SPMd_PHomo2.nii';
-D(8).desc	= '-log_{10}p CW: Predicted';
-D(8).name	= 'Homo2';
+D(8).fname  = 'SPMd_PHomo2.nii';
+D(8).desc   = '-log_{10}p CW: Predicted';
+D(8).name   = 'Homo2';
 D(8).label  = 'Homo. vs h(Y)';
-D(8).help	= ['Cook-Weisberg score statistic assessing constant variance assumption ' ...
+D(8).help   = ['Cook-Weisberg score statistic assessing constant variance assumption ' ...
     'of residuals wrt predicted response'];
 
-D(9).fname	= 'SPMd_PHomo3.nii';
-D(9).desc	= '-log_{10}p CW: Active';
-D(9).name 	= 'Homo3';
+D(9).fname  = 'SPMd_PHomo3.nii';
+D(9).desc   = '-log_{10}p CW: Active';
+D(9).name   = 'Homo3';
 D(9).label  = 'Homo. vs X';
-D(9).help	= ['Cook-Weisberg score statistic assessing constant variance assumption ' ...
+D(9).help   = ['Cook-Weisberg score statistic assessing constant variance assumption ' ...
     'of residuals wrt experimental condition'];
 
-D(10).fname	= 'SPMd_PNorm.nii';
-D(10).desc	= '-log_{10}p SW';
-D(10).name	= 'Norm';
+D(10).fname = 'SPMd_PNorm.nii';
+D(10).desc  = '-log_{10}p SW';
+D(10).name  = 'Norm';
 D(10).label = 'Normality';
-D(10).help	= 'Shapiro-Wilk statistic assessing normality assumption of residuals';
+D(10).help  = 'Shapiro-Wilk statistic assessing normality assumption of residuals';
 
-D(11).fname	= 'SPMd_Outl.nii';
-D(11).desc	= 'Outlier count';
-D(11).name	= 'Outl';
+D(11).fname = 'SPMd_Outl.nii';
+D(11).desc  = 'Outlier count';
+D(11).name  = 'Outl';
 D(11).label = 'Outlier';
-D(11).help	= 'Assess the number of outliers at the voxel';
+D(11).help  = 'Assess the number of outliers at the voxel';
 
 
 function D = get_SS_ts(type)
 %==========================================================================
 % Build the menu structure of all diagnostic and exploratory statistics
 %==========================================================================
-D(1).fname	= 'predint';
+D(1).fname  = 'predint';
 D(1).label      = 'Predictor';
-D(1).help	= 'The predicted signal';
+D(1).help   = 'The predicted signal';
 
-D(2).fname	= 'global';
+D(2).fname  = 'global';
 D(2).label      = 'Global Signal';
-D(2).help	= 'The temporal global intensity';
+D(2).help   = 'The temporal global intensity';
 
-D(3).fname	= 'toutlier';
+D(3).fname  = 'toutlier';
 D(3).label      = 'Outlier Rate';
-D(3).help	= 'Percent of expected outliers';
+D(3).help   = 'Percent of expected outliers';
 
 if strcmp(type,'compute')
-    D(4).fname	= 'regparm';
+    D(4).fname  = 'regparm';
     D(4).label    = 'Reg. Parameters';
-    D(4).help	= 'Registration shift and rotation movement parameters';
+    D(4).help   = 'Registration shift and rotation movement parameters';
     
-    D(5).fname	= 'pg';
+    D(5).fname  = 'pg';
     D(5).label    = 'Average periodogram';
-    D(5).help	= ['Average periodogram of raw residuals of',...
+    D(5).help   = ['Average periodogram of raw residuals of',...
         'the time series over the brain'];
 elseif strcmp(type,'visual')
-    D(4).fname	= 'shift';
+    D(4).fname  = 'shift';
     D(4).label    = 'Shift Parameters';
-    D(4).help	= 'Registration shift movement parameters';
+    D(4).help   = 'Registration shift movement parameters';
     
-    D(5).fname	= 'rotate';
+    D(5).fname  = 'rotate';
     D(5).label    = 'Rotation Parameters';
-    D(5).help	= 'Registration rotation movement parameters';
+    D(5).help   = 'Registration rotation movement parameters';
     
-    D(6).fname	= 'pg';
+    D(6).fname  = 'pg';
     D(6).label    = 'Average periodogram';
-    D(6).help	= ['Average periodogram of raw residuals of',...
+    D(6).help   = ['Average periodogram of raw residuals of',...
         'the time series over the brain'];
 end

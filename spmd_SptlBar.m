@@ -3,7 +3,7 @@ function spmd_SptlBar(varargin)
 % FORMAT spmd_SptlBar(varargin)
 %   varargin - different types of options
 % _________________________________________________________________________
-% @(#)spmd_SptlBar.m	1.1 04/06/22
+% @(#)spmd_SptlBar.m    1.1 04/06/22
 
 % _______________________ Functions called ________________________________
 %
@@ -46,19 +46,19 @@ switch lower(Action)
         %------------------------------------------------------------------
         cUnits = get(F,'Units');
         set(F,'Units','Pixels');
-        P     = get(F,'Position'); P  = P(3:4);		% Figure dimensions {pixels}
-        S_Gra = P./[600, 865];				% x & y scaling coefs
+        P     = get(F,'Position'); P  = P(3:4);     % Figure dimensions {pixels}
+        S_Gra = P./[600, 865];              % x & y scaling coefs
         
         nBut  = 6;
         nGap  = 2;
-        sx    = floor(P(1)./(nBut+(nGap+2)/6));		% uicontrol object width
-        dx    = floor(2*sx/6);				% inter-uicontrol gap
-        sy    = floor(20*S_Gra(1));			% uicontrol object height
-        x0    = dx;					% initial x position
-        x     = dx/2;					% uicontrol x position
-        y     = P(2) - sy;				% uicontrol y position
-        y2    = P(2) - 2.25*sy;				% uicontrol y position
-        FS    = round(10*min(S_Gra));			% uicontrol font size
+        sx    = floor(P(1)./(nBut+(nGap+2)/6));     % uicontrol object width
+        dx    = floor(2*sx/6);              % inter-uicontrol gap
+        sy    = floor(20*S_Gra(1));         % uicontrol object height
+        x0    = dx;                 % initial x position
+        x     = dx/2;                   % uicontrol x position
+        y     = P(2) - sy;              % uicontrol y position
+        y2    = P(2) - 2.25*sy;             % uicontrol y position
+        FS    = round(10*min(S_Gra));           % uicontrol font size
         
         %-Delete any existing 'ToolBar' 'Tag'ged objects
         %------------------------------------------------------------------
@@ -69,9 +69,10 @@ switch lower(Action)
         
         %-Create Frame for controls
         %------------------------------------------------------------------
-        uicontrol(F,'Style', 'Frame',...
+        uipanel(F,...
             'Position',[-4 (P(2) - 1.25*sy) P(1)+8 1.25*sy+4],...
-            'Tag','ToolBar','HandleVisibility','callback');
+            'Tag','ToolBar',...
+            'HandleVisibility','callback');
         
         %-Create uicontrol objects
         %------------------------------------------------------------------

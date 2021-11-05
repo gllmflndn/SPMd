@@ -101,8 +101,8 @@ end
 
 %- set the toolbar at the top of the model detail window.
 %----------------------------------------------------------------------
-WS   = spm('WinScale');				%-Window scaling factors
-FS   = spm('fontsizes');			% uicontrol font size
+WS   = spm('WinScale');             %-Window scaling factors
+FS   = spm('fontsizes');            % uicontrol font size
 PF   = spm_platform('fonts');
 
 %=============================================================

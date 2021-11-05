@@ -6,17 +6,17 @@ function spmd_comp_SS(varargin)
 %
 % The output of variables are appended to SPMd_SS
 %
-% Predictor                   - indicator of predicators of interest
-% Global Signal               - matrix of global signal related time
-%                               series. Three colums with length equal to
-%                               the number of scans in this matrix:
-%                               global signal, predicted global signal by
-%                               all experimental covariates, and
-%                               predicted global signal by nuisance covariates.
-% Prop. of Toutliers          - The proportion of the number of outlier
-%                               in the actual experiment to the expected outlier
-% Reg. Parameters             - matrix of registration parameters
-% Average periodogram         - average periodogram of raw residuals
+% Predictor              - indicator of predicators of interest
+% Global Signal          - matrix of global signal related time
+%                          series. Three colums with length equal to
+%                          the number of scans in this matrix:
+%                          global signal, predicted global signal by
+%                          all experimental covariates, and
+%                          predicted global signal by nuisance covariates.
+% Prop. of Toutliers     - The proportion of the number of outlier
+%                          in the actual experiment to the expected outlier
+% Reg. Parameters        - matrix of registration parameters
+% Average periodogram    - average periodogram of raw residuals
 % _________________________________________________________________________
 %
 % Warnings
@@ -36,9 +36,9 @@ function spmd_comp_SS(varargin)
 
 %-Check if SPMd_SS.mat in current directory
 %--------------------------------------------------------------------------
-if exist(fullfile('.','SPMd_SS.mat'),'file')==0
-    swd = '.';
-    if exist(fullfile(swd,'SPM.mat'))~=2
+if spm_existfile(fullfile(pwd,'SPMd_SS.mat'))
+    swd = pwd;
+    if ~spm_existfile(fullfile(swd,'SPM.mat'))
         error('No SPM.mat in current directory')
     end
     xSPM = load(fullfile(swd,'SPM.mat'));
@@ -47,17 +47,17 @@ if exist(fullfile('.','SPMd_SS.mat'),'file')==0
     VY   = xSPM.xY.VY;
     if isfield(xSPM,'Sess'), Sess = xSPM.Sess; else, Sess = []; end
     
-    [nScan nVar]  = size(VY);
+    [nScan, nVar] = size(VY);
     DesMtx        = xX.X;
     
     %- fMRI-specific operations
     %----------------------------------------------------------------------
     if isstruct(xX.K)
         
-        nPS = 0;              % Number of scans in previous sessions
-        nS  = size(DesMtx,1); % Number of scans
+        nPS = 0;                % Number of scans in previous sessions
+        nS  = size(DesMtx,1);   % Number of scans
         for s=1:length(xX.K)
-            KH = xX.K(s).X0;
+            KH  = xX.K(s).X0;
             nSS = size(KH,1);   % Number of scans in this session
             nH  = size(KH,2);   % Number of HP bases
             % Zero pad to account for other sessions
@@ -66,14 +66,14 @@ if exist(fullfile('.','SPMd_SS.mat'),'file')==0
             nPS = nPS + nSS;
         end
     end
-    S   = xSPM.xVol.S;       %- number of voxels in each scan
+    S   = xSPM.xVol.S;          % Number of voxels in each scan
     fDM = DesMtx;
     rDM = xX.X;
     
 else
     load SPMd_SS
     swd = SS.SPM.swd;
-    if exist(fullfile(swd,'SPM.mat'),'file')~=2
+    if ~spm_existfile(fullfile(swd,'SPM.mat'))
         spmmat_handle = spm_select(1,'SPM.mat','Select SPM.mat file');
         swdSPM = spm_str_manip(spmmat_handle,'hd');
         xSPM = load(fullfile(swdSPM,'SPM.mat'));
@@ -94,21 +94,20 @@ end
 
 %-If there is no high pass filter, then the reduced model is model with
 % only intercept term.
-%------------------------------------------------------------------------
+%--------------------------------------------------------------------------
 if size(rDM,2) == size(fDM,2)
     rDM = ones(nScan,1);
 end
 
-xX.fDM  = fDM;
-xX.rDM  = rDM;
+xX.fDM = fDM;
+xX.rDM = rDM;
 
-SS.xX   = xX;
-SS.VY   = VY;
-SS.RX   = [];
+SS.xX  = xX;
+SS.VY  = VY;
+SS.RX  = [];
 
-%- Action to take
-%------------------------------------------------------------------------
-
+%-Action to take
+%--------------------------------------------------------------------------
 if nargin == 0
     varargin = {'predint','toutlier','global','pg','regparm'};
 end
@@ -141,8 +140,8 @@ while (a <= length(varargin))
             
             %-Calculate the F-test for the correlation between the temporal
             % measurements to the predictors.
-            %------------------------------------------------------------------------------------
-            [ts,Stat]	  = GetF(glob,rDM,fDM);
+            %--------------------------------------------------------------
+            [ts,Stat]     = GetF(glob,rDM,fDM);
             GX.name       = 'Temporal Global Signal';
             GX.ts         = ts(:,1);
             GX.Est        = ts(:,2:3);
@@ -165,7 +164,7 @@ while (a <= length(varargin))
             
             %-Calculate the F-test for the correlation between the temporal
             % measurements to the predictors.
-            %---------------------------------------------------------------------------------------
+            %--------------------------------------------------------------
             if ~isempty(RegParm)
                 RegName     = char('x-shift','y-shift','z-shift','pitch','roll','yaw');
                 ParmI       = 1:6;
@@ -198,14 +197,13 @@ try
 catch
     save SPMd_SS SS
 end
-%close(gcf)
-return
 
-%=======================================================================
+
+%==========================================================================
 %                      S U B F U N C T I O N S
-%=======================================================================
+%==========================================================================
 function [X1, Ipi, PredNms] = GetExpPred(SPM,Con,ShCov)
-%======================================================================
+%==========================================================================
 %  Get experimental predictors, indicator of predictors of interest, and
 %  names
 %   SPM - SPM structure
@@ -219,7 +217,7 @@ function [X1, Ipi, PredNms] = GetExpPred(SPM,Con,ShCov)
 %     user-specified covariates
 %   o If *no* conditions and only user-specified covariates, show covariates
 %  Note: ShCov flag overrides this, and shows the covariates regardless
-%======================================================================
+%==========================================================================
 if isfield(SPM,'Sess'), Sess = SPM.Sess; else, Sess = []; end
 xX   = SPM.xX;
 X    = xX.X;
@@ -349,13 +347,11 @@ else
     PredNms = {'Contrast'};
 end
 
-return
-
 
 function TOutlier = GetTOutl(SS,xSPM)
-%======================================================================
+%==========================================================================
 %  Get temporal outlier profile
-%======================================================================
+%==========================================================================
 
 if ~isfield(SS,'Toutl')
     TOutlier = [];
@@ -368,13 +364,12 @@ if isempty(TOutlier)
     load SPMd_SS
     TOutlier = SS.Toutl.ts;
 end
-return
 
 
 function Glob = GetGlob(SS)
-%======================================================================
+%==========================================================================
 %  Get temporal outlier profile
-%======================================================================
+%==========================================================================
 if ~isfield(SS,'GX')
     Glob = [];
 else
@@ -393,12 +388,11 @@ if isempty(Glob)
     end
 end
 
-return
 
 function [power,freq] = GetPG(SS,xSPM)
-%======================================================================
+%==========================================================================
 %  Get average periodogram of raw residuals
-%======================================================================
+%==========================================================================
 if ~isfield(SS,'PG')
     power = [];
     freq  = [];
@@ -413,13 +407,11 @@ if isempty(power)
     freq  = SS.PG.freq;
 end
 
-return
-
 
 function RegPar = GetRegParm(VY,ParmfNm)
-%======================================================================
+%==========================================================================
 %  Get registration parameters if possible
-%======================================================================
+%==========================================================================
 nScan = size(VY,1);
 
 if (nargin<2 || isempty(ParmfNm))
@@ -427,7 +419,8 @@ if (nargin<2 || isempty(ParmfNm))
     Path   = spm_str_manip(fNm,'H');
     BaseNm = spm_str_manip(fNm,'tr');
     
-    if (BaseNm(1)=='n'), BaseNm(1) = []; end
+    if (BaseNm(1)=='s'), BaseNm(1) = []; end
+    if (BaseNm(1)=='w'), BaseNm(1) = []; end
     if (BaseNm(1)=='r'), BaseNm(1) = []; end   % Get down to raw filename
     
     ParmfNm = fullfile(Path,['rp_' BaseNm '.txt' ]);
@@ -455,7 +448,7 @@ if ~isempty(ParmfNm)
     
     %-Check if the length of the realignment parameters is the same as the
     %-nScan
-    %---------------------------------------------------------------------
+    %----------------------------------------------------------------------
     LRegPar = size(RegPar,1);
     if LRegPar == nScan
         RegPar = RegPar;
@@ -491,16 +484,16 @@ if ~isempty(ParmfNm)
         RegPar(1,:) = NaN;
     end
 end
-return
+
 
 function [Global,Stat] = GetF(glob,X1,X)
-%======================================================================
+%==========================================================================
 %-Calculate the F-test for the correlation between the temporal
 % measurements to the predictors
 %   X1:   matrix with less variables
 %   X :   matrix with more variables, the first nVar columns contains the
 %         variables in X1.
-%======================================================================
+%==========================================================================
 [nScan nVar1] = size(X1);
 nVar          = size(X,2);
 X2            = X(:,nVar1:end);
@@ -524,15 +517,14 @@ Ghni          = glob-R2;
 Gh            = glob-R;
 Global        = [glob Ghni Gh];
 Stat          = [F p];
-return
 
-% Sub-function: nanmax
+
 function m = sf_nanmax(A)
-
+%==========================================================================
+%-Compute max(...,'omitnan')
+%==========================================================================
 % Assume that no column is all NaN's
-
 A(isnan(A)) = -Inf;
 m = max(A);
 nanIndex = find(m==-Inf);
 m(nanIndex) = NaN;
-return

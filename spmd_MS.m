@@ -1,6 +1,5 @@
 function spmd_MS(varargin)
-%
-% Creates page of spatial summary images
+% Create page of spatial summary images
 %=======================================================================
 % - FORMAT specifications for the embedded callback functions
 %=======================================================================
@@ -54,16 +53,8 @@ function spmd_MS(varargin)
 % or
 %   spmd_MS('Wind',1:3,{[0 50],[-6 6],[0 10]})
 %__________________________________________________________________________
-% @(#)spmd_MS.m	1.15 Tom Nichols & Wen-Lin Luo 03/07/16
+% @(#)spmd_MS.m 1.15 Tom Nichols & Wen-Lin Luo 03/07/16
 
-
-%______________________________Function Called ____________________________
-% spm_str_manip
-% spmd_check_registration
-% spmd_orthviews
-%__________________________________________________________________________
-
-%load SPM
 
 %========================================================================
 %- Set up the default images
@@ -73,16 +64,16 @@ nImgDef = 6;
 % Default images
 
 DefImgs = {'spmF_0002','PCorr',...
-	'PHomo1','PNorm',...
-	'Mean','ResRMS_MDC'};
+    'PHomo1','PNorm',...
+    'Mean','ResRMS_MDC'};
 % Default descriptions
 DefDesc = {'F-statistics','Durbin-Watson (-log10 p)',...
-	'Score (-log10 p)','Shapiro-Wilks (-log10 p)',...
-	'Mean','Standard Deviation'};
+    'Score (-log10 p)','Shapiro-Wilks (-log10 p)',...
+    'Mean','Standard Deviation'};
 % Default windows
 DefWind = {'auto',[0 10],...
-	[0,10],[0 10],...
-	'auto',[0 1]};
+    [0,10],[0 10],...
+    'auto',[0 1]};
 
 %-set the maximal number of images shown in the spatial summary window.
 %-----------------------------------------------------------------------
@@ -106,9 +97,9 @@ while (a <= nargin)
       error('Must specify equal number of img nums and img names'); end
     for  k=1:length(ks)
       if (length(ks)==1)
-	Imgs{ks} = fNm;
+    Imgs{ks} = fNm;
       else
-	Imgs{ks(k)} = fNm{k};
+    Imgs{ks(k)} = fNm{k};
       end
     end
     a = a + 3;
@@ -121,9 +112,9 @@ while (a <= nargin)
       error('Must specify equal number of img nums and descriptions'); end
     for  k=1:length(ks)
       if (length(ks)==1)
-	Desc{ks} = Dsc;
+    Desc{ks} = Dsc;
       else
-	Desc{ks(k)} = Dsc{k};
+    Desc{ks(k)} = Dsc{k};
       end
     end
     a = a + 3;
@@ -137,13 +128,13 @@ while (a <= nargin)
       Wind(ks) = {Win};
     else
       if (length(ks)>1 && (~iscell(Win) || length(ks)~=length(Win)))
-	error('Must specify equal number of img nums and windows'); end
+    error('Must specify equal number of img nums and windows'); end
       for  k=1:length(ks)
-	if (length(ks)==1)
-	  Wind{ks} = Win;
-	else
-	  Wind{ks(k)} = Win{k};
-	end
+    if (length(ks)==1)
+      Wind{ks} = Win;
+    else
+      Wind{ks(k)} = Win{k};
+    end
       end
     end
     a = a + 3;

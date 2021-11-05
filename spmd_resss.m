@@ -73,9 +73,9 @@ function Vo = spmd_resss(Vi,Vo,R,flags,K)
 % or to combine the global scaling factors in the residual forming
 % matrix.
 %_______________________________________________________________________
-% @(#)spm_resss.m	2.8 Andrew Holmes, John Ashburner 99/06/07
+% @(#)spm_resss.m   2.8 Andrew Holmes, John Ashburner 99/06/07
 % If Vo is vector of length size(R,1), residuals are written out.
-% @(#)spmd_resss.m	1.4 Tom Nichols 02/05/09
+% @(#)spmd_resss.m  1.4 Tom Nichols 02/05/09
 
 %________________________________ Functions called ________________________
 %    spm_type
@@ -93,7 +93,7 @@ if nargin<5, K = []; end
 if nargin<4, flags=''; end, if isempty(flags), flags='-'; end
 mask = any(flags=='m');
 if nargin<3, error('insufficient arguments'); end
-ni = size(R,2);					%-ni = #images
+ni = size(R,2);                 %-ni = #images
 if ni~=prod(size(Vi)), error('incompatible dimensions'); end
 %if ~spm_type(Vo(1).dim(4),'nanrep'), error('only float/double output images supported'), end
 if length(Vo)>1 & length(Vo)~=size(R,1),
@@ -102,9 +102,9 @@ if length(Vo)>1 & length(Vo)~=size(R,1),
 %-Image dimension, orientation and voxel size checks
 %-----------------------------------------------------------------------
 V = [Vi(:);Vo(:)];
-%if any(any(diff(cat(1,V.dim),1,1),1)&[1,1,1,0])	%NB: Bombs for single image
-%	error('images don''t all have the same dimensions'), end
-if any(any(diff(cat(1,V.dim),1,1),1)&[1,1,0])	%NB: Bombs for single image
+%if any(any(diff(cat(1,V.dim),1,1),1)&[1,1,1,0])    %NB: Bombs for single image
+%   error('images don''t all have the same dimensions'), end
+if any(any(diff(cat(1,V.dim),1,1),1)&[1,1,0])   %NB: Bombs for single image
     error('images don''t all have the same dimensions'), end
 if any(any(any(diff(cat(3,V.mat),1,3),3)))
     error('images don''t all have same orientation & voxel size'), end
@@ -113,19 +113,19 @@ if any(any(any(diff(cat(3,V.mat),1,3),3)))
 %=======================================================================
 % - C O M P U T A T I O N
 %=======================================================================
-fprintf('%-14s%16s',['(',mfilename,')'],'...initialising')	     %-#
+fprintf('%-14s%16s',['(',mfilename,')'],'...initialising')       %-#
 
-Y  = zeros([Vo(1).dim(1:2),ni]);			%-PlaneStack data
+Y  = zeros([Vo(1).dim(1:2),ni]);            %-PlaneStack data
 
 im = false(ni,1);
-%for j=1:ni, im(j)=~spm_type(Vi(j).dim(4),'NaNrep'); end	%-Images without NaNrep
+%for j=1:ni, im(j)=~spm_type(Vi(j).dim(4),'NaNrep'); end    %-Images without NaNrep
 
 %-Loop over planes computing ResSS
 for p=1:Vo(1).dim(3)
     fprintf('%s%16s',repmat(sprintf('\b'),1,16),...
         sprintf('...plane %3d/%-3d',p,Vo(1).dim(3)))       %-#
     
-    M = spm_matrix([0 0 p]);			%-Sampling matrix
+    M = spm_matrix([0 0 p]);            %-Sampling matrix
     
     %-Read plane data
     for j=1:ni, Y(:,:,j) = spm_slice_vol(Vi(j),M,Vi(j).dim(1:2),0); end
@@ -137,17 +137,17 @@ for p=1:Vo(1).dim(3)
         e  = R*spm_filter(K,reshape(Y,prod(Vi(1).dim(1:2)),ni)');
         %-residuals as DataMtx
     else
-        e  = R*reshape(Y,prod(Vi(1).dim(1:2)),ni)';	%-residuals as DataMtx
+        e  = R*reshape(Y,prod(Vi(1).dim(1:2)),ni)'; %-residuals as DataMtx
     end
     
     if length(Vo)>1
         for i=1:length(Vo)
-            res   = reshape(e(i,:),Vi(1).dim(1:2));	%-Residual plane
-            Vo(i) = spm_write_plane(Vo(i),res,p);	%-Write plane
+            res   = reshape(e(i,:),Vi(1).dim(1:2)); %-Residual plane
+            Vo(i) = spm_write_plane(Vo(i),res,p);   %-Write plane
         end
     else
-        ss = reshape(sum(e.^2,1),Vi(1).dim(1:2));	%-ResSS plane
-        Vo = spm_write_plane(Vo,ss,p);		%-Write plane
+        ss = reshape(sum(e.^2,1),Vi(1).dim(1:2));   %-ResSS plane
+        Vo = spm_write_plane(Vo,ss,p);      %-Write plane
     end
 end
 

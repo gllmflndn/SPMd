@@ -112,7 +112,7 @@ end
 try
     SPM.xY.VY;
 catch
-    helpdlg({	'Please assign data to this design',...
+    helpdlg({   'Please assign data to this design',...
         'Use fMRI under model specification'});
     spm('FigName','Stats: done',Finter);
     return
@@ -153,10 +153,6 @@ if exist(fullfile('.','SPMd.mat'),'file') == 2
         drawnow
     end
 end
-
-%-Specify all the spm defaults
-%-----------------------------------------------------------------------
-spm_defaults
 
 %-Specify all the spatial diagnostic statistics
 %-----------------------------------------------------------------------
@@ -206,11 +202,11 @@ catch
     xM = -ones(nScan,1)/0;
 end
 if ~isstruct(xM)
-    xM = struct('T',	[],...
-        'TH',	xM,...
-        'I',	0,...
-        'VM',	{[]},...
-        'xs',	struct('Masking','analysis threshold'));
+    xM = struct('T',    [],...
+        'TH',   xM,...
+        'I',    0,...
+        'VM',   {[]},...
+        'xs',   struct('Masking','analysis threshold'));
 end
 
 %-Check all necessary variables
@@ -221,8 +217,8 @@ W     = xX.W;     %-Get whitening/Weighting matrix
 
 %-Design space and projector matrix [pseudoinverse] for WLS
 %=======================================================================
-xX.xKXs = spm_sp('Set',spm_filter(xX.K,W*xX.X));	% KWX
-xX.pKX  = spm_sp('x-',xX.xKXs);				% projector
+xX.xKXs = spm_sp('Set',spm_filter(xX.K,W*xX.X));    % KWX
+xX.pKX  = spm_sp('x-',xX.xKXs);             % projector
 
 
 %-Image dimensions and data
@@ -235,15 +231,14 @@ YNaNrep  = VY(1).dt(2);
 
 %-Maximum number of residual images for smoothness estimation
 %-----------------------------------------------------------------------
-global     defaults
-MAXRES   = defaults.stats.maxres;
+MAXRES   = spm_get_defaults('stats.maxres');
 
 %-maxMem is the maximum amount of data processed at a time (bytes)
 %-----------------------------------------------------------------------
-MAXMEM   = defaults.stats.maxmem;
+MAXMEM   = spm_get_defaults('stats.maxmem');
 nSres    = min(nScan,MAXRES);
-blksz    = ceil(MAXMEM/8/nScan);				%-block size
-nbch     = ceil(xdim*ydim/blksz);				%-# blocks
+blksz    = ceil(MAXMEM/8/nScan);                %-block size
+nbch     = ceil(xdim*ydim/blksz);               %-# blocks
 
 fprintf('%s%30s\n',repmat(sprintf('\b'),1,30),'...done')             %-#
 
@@ -280,7 +275,7 @@ Vstat(1:nStat) = deal(...
     'fname',   '',...
     'dim',     DIM,...
     'dt',      [spm_type('float64'), spm_platform('bigend')],...
-    'mat',	   M,...
+    'mat',     M,...
     'pinfo',   [1 0 0]',...
     'descrip', ''));
 
@@ -292,15 +287,15 @@ end
 
 Vstat = spm_data_hdr_write(Vstat);
 
-%-Intialise diagnostic statistics corresponding P-value image files
+%-Initialise diagnostic statistics corresponding P-value image files
 %-----------------------------------------------------------------------
 %VPstat(1:nStat) = deal(...
 %    struct(...
-%    'fname',	[],...
-%    'dim',	[DIM',spm_type('float')],...
-%    'mat',	M,...
-%    'pinfo',	[1 0 0]',...
-%    'descrip',	''));
+%    'fname',   [],...
+%    'dim', [DIM',spm_type('float')],...
+%    'mat', M,...
+%    'pinfo',   [1 0 0]',...
+%    'descrip', ''));
 
 VPstat(1:nStat) = deal(...
     struct(...
@@ -340,11 +335,11 @@ XYZ   = zeros(3,xdim*ydim*zdim);
 str = 'Diagnostic statistics computation';
 spm_progress_bar('Init',100,str,'');
 
-for z = 1:zdim				%-loop over planes (2D or 3D data)
+for z = 1:zdim              %-loop over planes (2D or 3D data)
     
     % current plane-specific parameters
     %-------------------------------------------------------------------
-    zords   = z*ones(xdim*ydim,1)';	%-plane Z coordinates
+    zords   = z*ones(xdim*ydim,1)'; %-plane Z coordinates
     CrBl    = [];                       %-parameter estimates
     CrResI  = [];                       %-normalized residuals
     CrResSS = [];                       %-residual sum of Squares
@@ -353,10 +348,10 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
         stat(i).Cr = [];                %-diagnostic statistic(s)
         stat(i).P  = [];                %-diagnostic statistic(s)
     end
-    Q            = [];			%-in mask indices for this plane
-    CrMean       = [];			%-parameter estimates
+    Q            = [];          %-in mask indices for this plane
+    CrMean       = [];          %-parameter estimates
     
-    for bch = 1:nbch			%-loop over blocks
+    for bch = 1:nbch            %-loop over blocks
         
         %-# Print progress information in command window
         %---------------------------------------------------------------
@@ -365,15 +360,15 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
         
         %-construct list of voxels in this block
         %---------------------------------------------------------------
-        I     = [1:blksz] + (bch - 1)*blksz;	        %-voxel indices
-        I     = I(I <= xdim*ydim);			%-truncate
-        xyz   = [xords(I); yords(I); zords(I)];	        %-voxel coordinates
-        nVox  = size(xyz,2);			        %-number of voxels
+        I     = [1:blksz] + (bch - 1)*blksz;            %-voxel indices
+        I     = I(I <= xdim*ydim);          %-truncate
+        xyz   = [xords(I); yords(I); zords(I)];         %-voxel coordinates
+        nVox  = size(xyz,2);                    %-number of voxels
         
         %-Get data & construct analysis mask
         %===============================================================
         fprintf('%s%30s',repmat(sprintf('\b'),1,30),'...read & mask data ')
-        Cm    = true(1,nVox);			%-current mask
+        Cm    = true(1,nVox);           %-current mask
         
         %-Compute explicit mask
         % (note that these may not have same orientations)
@@ -396,11 +391,11 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
             
             %-Load data in mask
             %-------------------------------------------------------
-            if ~any(Cm), break, end			%-Break if empty mask
+            if ~any(Cm), break, end         %-Break if empty mask
             Y(i,Cm)  = spm_get_data(VY(i),xyz(:,Cm));
             
-            Cm(Cm)   = Y(i,Cm) > xM.TH(i);		%-Threshold (& NaN) mask
-            if xM.I && ~YNaNrep && xM.TH(i) < 0	        %-Use implicit mask
+            Cm(Cm)   = Y(i,Cm) > xM.TH(i);      %-Threshold (& NaN) mask
+            if xM.I && ~YNaNrep && xM.TH(i) < 0         %-Use implicit mask
                 Cm(Cm) = abs(Y(i,Cm)) > eps;
             end
         end
@@ -408,8 +403,8 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
         %-Mask out voxels where data is constant
         %---------------------------------------------------------------
         Cm(Cm) = any(diff(Y(:,Cm),1));
-        Y      = Y(:,Cm);				%-Data within mask
-        CrS    = sum(Cm);				%-# current voxels
+        Y      = Y(:,Cm);               %-Data within mask
+        CrS    = sum(Cm);               %-# current voxels
         
         %===============================================================
         %-Proceed with General Linear Model (if there are voxels)
@@ -426,11 +421,11 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
             %------------------------------------------------------
             fprintf('%s%30s',repmat(sprintf('\b'),1,30),'estimation') %-#
             
-            beta   = xX.pKX*KWY;		%-Parameter estimates
-            res    = spm_sp('r',xX.xKXs,KWY);	%-Residuals
+            beta   = xX.pKX*KWY;        %-Parameter estimates
+            res    = spm_sp('r',xX.xKXs,KWY);   %-Residuals
             ResSS  = sum(res.^2);               %-Residual SSQ
-            PredY  = KWY - res;		        %-Predicted responses
-            Mean   = mean(Y); 		        %-Mean responses
+            PredY  = KWY - res;             %-Predicted responses
+            Mean   = mean(Y);               %-Mean responses
             clear KWY                           %-Clear to save memory
             
             
@@ -483,9 +478,9 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
         
         %-Append new inmask voxel locations and volumes
         %---------------------------------------------------------------
-        XYZ(:,S + [1:CrS]) = xyz(:,Cm);		%-InMask XYZ voxel coords
-        Q                  = [Q I(Cm)];		%-InMask XYZ voxel indices
-        S                  = S + CrS;		%-Volume analysed (voxels)
+        XYZ(:,S + [1:CrS]) = xyz(:,Cm);     %-InMask XYZ voxel coords
+        Q                  = [Q I(Cm)];     %-InMask XYZ voxel indices
+        S                  = S + CrS;       %-Volume analysed (voxels)
         
     end   % (bch)
     
@@ -581,13 +576,13 @@ if exist(fullfile('.','SPMd_MS.mat'),'file') == 2
     nstat = length(MS.stat);
 else
     nstat = 0;
-    xX.S     = S;			%-Volume (voxels)
-    xX.fDM   = D(7).X;    	        %-Full model design Mtx including
+    xX.S     = S;           %-Volume (voxels)
+    xX.fDM   = D(7).X;              %-Full model design Mtx including
     %intercept and high pass filter
-    MS.xX    = xX;		        %-design structure
-    MS.xVi   = xVi;		        %-non-sphericity structure
+    MS.xX    = xX;              %-design structure
+    MS.xVi   = xVi;             %-non-sphericity structure
     MS.VY    = VY;
-    MS.VMean    = VMean;		%-Filehandle - Mean
+    MS.VMean    = VMean;        %-Filehandle - Mean
     
     MS.SPM.desp  = 'SPM.mat file used for diagnostic analysis';
     MS.SPM.swd   = swd;
@@ -595,24 +590,24 @@ end
 
 for i = 1:nStat
     MS.stat(nstat+i)   = stat(i);
-    MS.Vstat(nstat+i)  = Vstat(i);		%-Filehandle - statistics
-    MS.VPstat(nstat+i) = VPstat(i); 		%-Filehandle - P-value
+    MS.Vstat(nstat+i)  = Vstat(i);      %-Filehandle - statistics
+    MS.VPstat(nstat+i) = VPstat(i);         %-Filehandle - P-value
 end
 
 %-Scan Summary
 if exist(fullfile('.','SPMd_MS.mat'),'file') == 2
     load SPMd_MS
 end
-PG.power     = aPower/S;        	%-Temporal mean periodogram
-PG.freq	     = freq;                	%-Frequency of periodogram
-GX.ts        = Glob;            	%-Global signal
+PG.power     = aPower/S;            %-Temporal mean periodogram
+PG.freq      = freq;                    %-Frequency of periodogram
+GX.ts        = Glob;                %-Global signal
 Toutl.ts     = Tout;
 xX.fDM       = D(7).X;
 SS.xX        = xX;
 SS.VY        = VY;
-SS.PG  	     = PG;
+SS.PG        = PG;
 SS.GX        = GX;
-SS.Toutl     = Toutl;        		%-Temporal outlier counts
+SS.Toutl     = Toutl;               %-Temporal outlier counts
 SS.SPM.swd   = swd;
 
 %-Save analysis parameters in SPM.mat file
@@ -698,7 +693,7 @@ if isempty(xGX.rg)
 else
     g     = xGX.rg;
 end
-Glob 	= [ones(nScan,1) g];
+Glob    = [ones(nScan,1) g];
 
 
 %-Specify all the spatial diagnostic statistics
@@ -779,11 +774,11 @@ D(7).X        = DesMtx;
 D(7).para     = [];
 D(7).help     = 'Examine the number of outlier at each voxel';
 
-D(8).name     = 'ResRMS';
-D(8).desp     = 'Standard deviation of residuals';
-D(8).Cr       = [];
-D(8).Pdesp    = 'Standard deviation of residuals';
-D(8).diag     = 'sdr';
-D(8).X        = DesMtx;
-D(8).para     = [];
-D(8).help     = 'Standard deviation of residuals';
+% D(8).name     = 'ResRMS';
+% D(8).desp     = 'Standard deviation of residuals';
+% D(8).Cr       = [];
+% D(8).Pdesp    = 'Standard deviation of residuals';
+% D(8).diag     = 'sdr';
+% D(8).X        = DesMtx;
+% D(8).para     = [];
+% D(8).help     = 'Standard deviation of residuals';

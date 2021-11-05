@@ -262,8 +262,8 @@ end
 
 TimeCurs = t;
 h = findobj('Tag','SPMd_MD');
-s = get(h,'Name');
-d = findstr(s,'Scan');
+if ~isempty(h), s = get(h,'Name'); else, s = ''; end
+d = strfind(s,'Scan');
 
 
 if ~isempty(d)
@@ -275,8 +275,8 @@ end
 s = [s sprintf('Scan %d',t)];
 set(h,'Name',s);
 h = findobj('Tag','SPMd_SS');
-s = get(h,'Name');
-d = findstr(s,'Scan');
+if ~isempty(h), s = get(h,'Name'); else, s = ''; end
+d = strfind(s,'Scan');
 
 if ~isempty(d)
     s(d:end) = [];

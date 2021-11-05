@@ -12,7 +12,7 @@ function [TS,V] = spmd_getTS(P,x,y,z,Sca)
 % V    -  Matrix of filenames
 % To speed up, recycle V.
 %__________________________________________________________________________
-% @(#)spmd_getTS.m	1.4 Tom Nichols 02/10/03
+% @(#)spmd_getTS.m  1.4 Tom Nichols 02/10/03
 
 
 V  = spm_vol(P);
@@ -51,11 +51,11 @@ function X = spmd_sample_vols(V,x,y,z,hold)
 % outside the image are set to zero. x, y and z must be matrices of the
 % same dimensions
 %__________________________________________________________________________
-% @(#)spmd_sample_vols.m	1.2 02/05/09
+% @(#)spmd_sample_vols.m    1.2 02/05/09
 
 
 if any(any(diff(cat(1,V.dim),1,1),1)&[1,1,1]) %NB: Bombs for single image
-	error('images don''t all have the same dimensions'), end
+    error('images don''t all have the same dimensions'), end
 if any(any(any(diff(cat(3,V.mat),1,3),3)))
         error('images do not all have same orientation & voxel size'), end
  

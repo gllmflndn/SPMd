@@ -1,35 +1,33 @@
 function Ind = spmd_pointer(varargin)
 % Function used to point out the clicked point.
-% FORMAT I = spmd_pointer(F)
-% I    Index of selected point
-% F    Vector of axes handles to look for clicked point
+% FORMAT Ind = spmd_pointer(F)
+% Ind        - Index of selected point
+% F          - Vector of axes handles to look for clicked point
 %
 % FORMAT spmd_pointer('Init',)
-% Initializes pointer structures
+% Initialize pointer structures
 %
 % FORMAT spmd_pointer('Set',I)
-% update pointer structures
+% Update pointer structures
 %__________________________________________________________________________
 % @(#)spmd_pointer.m
 
 
 global TimeCurs
 
-MaxClkDist = 0.03;
-
-if nargin==0; end                                    %- do nothing
+if ~nargin, return; end
 
 TR = varargin{1};
-if (isempty(TR)) return;  end                        %- do nothing
+if isempty(TR), return;  end
 Ind = [];
 
-if ~isstr(TR)
+if ~ischar(TR)
     F = TR;
 else
     switch(lower(TR))
         case 'init'
-            %- create plot
-            %--------------------------------------------------------------
+            %-Create plot
+            %==============================================================
             FC       = get(gcf,'children');
             A        = strcmp(get(FC,'type'),'axes');
             F        = findobj(FC(find(A)),'Tag','in_MD_plot');
@@ -63,8 +61,8 @@ else
             
             return
         case 'set'
-            %- update plot
-            %-------------------------------------------------------------
+            %-Update plot
+            %==============================================================
             Ind      = varargin{2};
             
             %- find 'in_MD_plot' plot
@@ -94,22 +92,22 @@ else
 end
 
 
-%- if the currentpoint is not within the range of data, then return
-%-------------------------------------------------------------------
+%-If the currentpoint is not within the range of data, then return
+%==========================================================================
 fg = gca;
-p = get(fg,'currentpoint');
+p  = get(fg,'CurrentPoint');
 
-if (p(1,3) ~= -p(2,3))
+if p(1,3) ~= -p(2,3)
     Ind = [];
     return
 end
 
 
-%- Find the (x,y) position for the current data point
-%------------------------------------------------------------------
+%-Find the (x,y) position for the current data point
+%==========================================================================
 P = p(1,1:2);
-Cdata = get(fg,'children');
-Ctype = get(Cdata(end),'type');
+Cdata = get(fg,'Children');
+Ctype = get(Cdata(end),'Type');
 
 if strcmp(Ctype,'text')
     Id = [];
@@ -119,15 +117,15 @@ else
     load SPM;
     nScan = SPM.nscan;
     
-    Xdata = get(Cdata(end),'xdata');
-    Ydata = get(Cdata(end),'ydata');
+    Xdata = get(Cdata(end),'XData');
+    Ydata = get(Cdata(end),'YData');
     
     [nrow, ncol] = size(Xdata);
     
     Index = 1;
     while (ncol~= nScan)
-        Xdata = get(Cdata(end-Index),'xdata');
-        Ydata = get(Cdata(end-Index),'ydata');
+        Xdata = get(Cdata(end-Index),'XData');
+        Ydata = get(Cdata(end-Index),'YData');
         [nrow, ncol] = size(Xdata);
         Index = Index + 1;
     end
@@ -139,32 +137,29 @@ else
     scaleY = (rangeY(2) - rangeY(1))*10;
     
     c = sqrt( (((Xdata-p(1,1))/scaleX).^2 + ((Ydata-p(1,2))/scaleY).^2)*100 );
-    if min(c) >MaxClkDist
+    if min(c) > 0.03 % MaxClkDist
         Ind = [];
     else
         Ind = min(find(c == min(c)));
     end
     
-    %- Put the text of position of current data point in all the subplots in
-    %  current figure
-    %-----------------------------------------------------------------------
+    %-Put the text of position of current data point in all the subplots in
+    % current figure
+    %----------------------------------------------------------------------
     for i = 1:length(F)
-        C = get(F(i),'children');
+        C = get(F(i),'Children');
         hp = findobj(F(i), 'Tag','SelPt');
         
-        if (~isempty(Ind))
-            xdata = get(C(end),'xdata');
-            ydata = get(C(end),'ydata');
+        if ~isempty(Ind)
+            xdata = get(C(end),'XData');
+            ydata = get(C(end),'YData');
             
             %-window Parameters
-            %-------------------------------------------------------------------
-            WS     = spm('WinScale');
-            FS     = spm('FontSizes');
-            PF     = spm_platform('fonts');
-            set(hp,'Xdata', xdata(Ind), 'Ydata', ydata(Ind), 'Tag', 'SelPt');
-            set(hp,'visible', 'on');
+            %--------------------------------------------------------------
+            set(hp, 'XData',xdata(Ind), 'YData',ydata(Ind), 'Tag','SelPt');
+            set(hp, 'Visible','on');
         else
-            set(hp,'visible', 'off');
+            set(hp, 'Visible','off');
         end
     end
 end

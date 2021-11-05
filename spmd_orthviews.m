@@ -75,16 +75,16 @@ function varargout = spmd_orthviews(action,varargin)
 %   Right   - Change the position of the crosshair and bring up the
 %             tempoal detailed window of diagnostic residual plots.
 %_______________________________________________________________________
-% @(#)spm_orthviews.m	2.25 John Ashburner & Matthew Brett 01/03/19
+% @(#)spm_orthviews.m   2.25 John Ashburner & Matthew Brett 01/03/19
 % UM Bios mods
 %   Changed default interpolation to nearest neighbor (0)
 %   Added gap to center of cross hairs
 %   Added support for MIPs
-% @(#)spm_orthviews.m	1.2 Tom Nichols 01/03/08
+% @(#)spm_orthviews.m   1.2 Tom Nichols 01/03/08
 %
 %  change the function for the diagnostic use
-% @(#)spmd_orthviews.m	1.36 Tom Nichols & Wen-Lin Luo 02/11/26
-% @(#)spmd_orthviews.m	1.3 04/06/30
+% @(#)spmd_orthviews.m  1.36 Tom Nichols & Wen-Lin Luo 02/11/26
+% @(#)spmd_orthviews.m  1.3 04/06/30
 %
 %
 % The basic fields of st are:
@@ -125,9 +125,9 @@ function varargout = spmd_orthviews(action,varargin)
 %                  views.  The fields of each element are handles for
 %                  the axis, image and crosshairs:
 %                               ax  - Axis handle for one image  
-%			         d  - image handle               
-%			        lx  - horizontal cross-hair line 
-%			        ly  - vertical cross-hair line   
+%                    d  - image handle               
+%                   lx  - horizontal cross-hair line 
+%                   ly  - vertical cross-hair line   
 % 
 %         blobs  - optional.  Is there for using to superimpose blobs.
 %                  vol     - 3D array of image data
@@ -135,13 +135,13 @@ function varargout = spmd_orthviews(action,varargin)
 %                            help on image formats).
 %                  max     - maximum intensity for scaling to.  If it
 %                            does not exist, then images are auto-scaled.
-% 		 
+%        
 %                  There are two colouring modes: full colour, and split
 %                  colour.  When using full colour, there should be a
 %                  'colour' field for each cell element.  When using
 %                  split colourscale, there is a handle for the colorbar
 %                  axis.
-% 		 
+%        
 %                  colour  - if it exists it contains the
 %                            red,green,blue that the blobs should be
 %                            displayed in.
@@ -216,7 +216,7 @@ end
 
 
 tmp = spm_figure('FindWin','Graphics');
-if (isempty(tmp) || fig ~= tmp)
+if (isempty(tmp) || ~isequal(fig,tmp))
   % We're using a non-Graphics window; get st via get_st; set it w/
   % set_st later
   st = get_st(fig);
@@ -243,7 +243,7 @@ switch lower(action)
     
     if strcmp(action,'mip')
       st.vols{H}.mip = struct('bbOld',[],'SpaceOld',[],'hldOld',[],'premulOld',[],...
-			      'imgt',[],'imgc',[],'imgs',[]);
+                  'imgt',[],'imgc',[],'imgs',[]);
     end
     
     st = redraw(st,H);
@@ -257,7 +257,7 @@ switch lower(action)
       st.vols{i} = rmfield(st.vols{i},'mip');
     else
       st.vols{i}.mip = struct('bbOld',[],'SpaceOld',[],'hldOld',[],'premulOld',[],...
-			      'imgt',[],'imgc',[],'imgs',[]);
+                  'imgt',[],'imgc',[],'imgs',[]);
     end
     st = redraw(st,i);
   end
@@ -380,7 +380,7 @@ switch lower(action)
     %spmd_orthviews('fig',gcf,'Reposition');
   elseif strcmp(get(cF,'SelectionType'),'alt')
     %spmd_orthviews('fig',gcf,'Reposition');
-    spmd_MD;	  
+    spmd_MD;      
   end
   
   
@@ -490,7 +490,7 @@ switch lower(action)
 end;
 
 %if (st.fig ~= spm_figure('FindWin','Graphics'))
-if (isempty(tmp) || st.fig ~= tmp)
+if (isempty(tmp) || ~isequal(st.fig,tmp))
   set_st(st,fig);
 end
 spm('Pointer');
@@ -512,9 +512,9 @@ for i=valid_handles(st,handle)
     ys =  get(st.vols{i}.ax{2}.ax,'Position');
     ys = ys(2)+ys(4);
     ax = axes('Parent',st.fig,...
-	      'Position',[area(1)+area(3)*0  ys+area(4)*0.015 ...
-		    area(3)*1     area(4)*0.04],...
-	      'visible','off');
+          'Position',[area(1)+area(3)*0  ys+area(4)*0.015 ...
+            area(3)*1     area(4)*0.04],...
+          'visible','off');
     st.vols{i}.titl_ax = ax;
     st.vols{i}.titl_h  = text(0.5,0,str,'HorizontalAlignment','center','Parent',ax);
   end
@@ -540,8 +540,8 @@ for i=valid_handles(st,handle)
     axpos = get(st.vols{i}.ax{1}.ax,'Position');
   end;
   ax = axes('Parent',st.fig,...
-	    'Position',[(axpos(1)+axpos(3)+0.05) (axpos(2)+0.005) 0.05 (axpos(4)-0.01)],...
-	    'Box','on');
+        'Position',[(axpos(1)+axpos(3)+0.05) (axpos(2)+0.005) 0.05 (axpos(4)-0.01)],...
+        'Box','on');
   mx = maxval(st.vols{i});
   mn = minval(st.vols{i});
   st.vols{i}.window = [mn mx];
@@ -553,13 +553,13 @@ for i=valid_handles(st,handle)
   sc2 = getscale2(st,i);
   if ~isnan(sc2)
     ax2 = axes('Parent',st.fig,...
-	       'Position',get(ax,'Position'),...
-	       'Xlim',[0 1],'Ylim',[mn mx]*sc2,...
-	       'YAxisLocation','right',...
-	       'XAxisLocation','top',...
-	       'color','none','Xtick',[],...
-	       'HitTest','off',...
-	       'UIContextMenu',get(UIC,'UIContextMenu'));
+           'Position',get(ax,'Position'),...
+           'Xlim',[0 1],'Ylim',[mn mx]*sc2,...
+           'YAxisLocation','right',...
+           'XAxisLocation','top',...
+           'color','none','Xtick',[],...
+           'HitTest','off',...
+           'UIContextMenu',get(UIC,'UIContextMenu'));
     set(ax,'box','off','UserData',ax2);
     if isfield(st.vols{i},'cb2titl'),
       set(get(ax2,'ylabel'),'String',st.vols{i}.cb2titl); 
@@ -573,35 +573,35 @@ for i=valid_handles(st,handle)
   fs = num2str(get(st.fig,'Number')); % This will break for noninteger figure num!!!!
   uimenu(h,'Label','Adjust intensity window...')
   uimenu(h,'Separator','on','Label','Set max',...
-	 'CallBack',['spmd_orthviews(''fig'',' fs ',''clickcolorbar'',' tmp ',''max'');'],...
-	 'Interruptible','off','BusyAction','Cancel');
+     'CallBack',['spmd_orthviews(''fig'',' fs ',''clickcolorbar'',' tmp ',''max'');'],...
+     'Interruptible','off','BusyAction','Cancel');
   uimenu(h,'Separator','off','Label','Set min',...
-	 'CallBack',['spmd_orthviews(''fig'',' fs ',''clickcolorbar'',' tmp ',''min'');'],...
-	 'Interruptible','off','BusyAction','Cancel');
+     'CallBack',['spmd_orthviews(''fig'',' fs ',''clickcolorbar'',' tmp ',''min'');'],...
+     'Interruptible','off','BusyAction','Cancel');
   uimenu(h,'Separator','off','Label','Manual',...
-	 'CallBack',['spmd_orthviews(''fig'',' fs ',''window'',' tmp ',''ask'');'],...
-	 'Interruptible','off','BusyAction','Cancel');
+     'CallBack',['spmd_orthviews(''fig'',' fs ',''window'',' tmp ',''ask'');'],...
+     'Interruptible','off','BusyAction','Cancel');
   uimenu(h,'Separator','off','Label','Reset',...
-	 'CallBack',['spmd_orthviews(''fig'',' fs ',''window'',' tmp ');'],...
-	 'Interruptible','off','BusyAction','Cancel');
+     'CallBack',['spmd_orthviews(''fig'',' fs ',''window'',' tmp ');'],...
+     'Interruptible','off','BusyAction','Cancel');
   uimenu(h,'Separator','off','Label','Mipify',...
-	 'CallBack',['spmd_orthviews(''fig'',' fs ',''mipify'',' tmp ');'],...
-	 'Interruptible','off','BusyAction','Cancel');
+     'CallBack',['spmd_orthviews(''fig'',' fs ',''mipify'',' tmp ');'],...
+     'Interruptible','off','BusyAction','Cancel');
   uimenu(h,'Separator','on','Label','Set max - all images',...
-	 'CallBack',['spmd_orthviews(''fig'',' fs ',''clickcolorbar'',1:24,''max'');'],...
-	 'Interruptible','off','BusyAction','Cancel');
+     'CallBack',['spmd_orthviews(''fig'',' fs ',''clickcolorbar'',1:24,''max'');'],...
+     'Interruptible','off','BusyAction','Cancel');
   uimenu(h,'Separator','off','Label','Set min - all images',...
-	 'CallBack',['spmd_orthviews(''fig'',' fs ',''clickcolorbar'',1:24,''min'');'],...
-	 'Interruptible','off','BusyAction','Cancel');
+     'CallBack',['spmd_orthviews(''fig'',' fs ',''clickcolorbar'',1:24,''min'');'],...
+     'Interruptible','off','BusyAction','Cancel');
   uimenu(h,'Separator','off','Label','Manual - all images',...
-	 'CallBack',['spmd_orthviews(''fig'',' fs ',''window'',1:24,''ask'');'],...
-	 'Interruptible','off','BusyAction','Cancel');
+     'CallBack',['spmd_orthviews(''fig'',' fs ',''window'',1:24,''ask'');'],...
+     'Interruptible','off','BusyAction','Cancel');
   uimenu(h,'Separator','off','Label','Reset - all images',...
-	 'CallBack',['spmd_orthviews(''fig'',' fs ',''window'',1:24);'],...
-	 'Interruptible','off','BusyAction','Cancel');
+     'CallBack',['spmd_orthviews(''fig'',' fs ',''window'',1:24);'],...
+     'Interruptible','off','BusyAction','Cancel');
   uimenu(h,'Separator','off','Label','Mipify - all images',...
-	 'CallBack',['spmd_orthviews(''fig'',' fs ',''mipify'',1:24);'],...
-	 'Interruptible','off','BusyAction','Cancel');
+     'CallBack',['spmd_orthviews(''fig'',' fs ',''mipify'',1:24);'],...
+     'Interruptible','off','BusyAction','Cancel');
   set(h_im,'UIContextMenu',h)
 end;
 return;
@@ -615,17 +615,17 @@ function st = updatecolorbar(st,handle,MnMx)
 if nargin<3, MnMx = []; end
 for i=valid_handles(st,handle)
   if isfield(st.vols{i},'cbar')
-    if isempty(MnMx) | any(isnan(MnMx))
-      if strcmp(st.vols{i}.window,'auto'),
-	mx = maxval(st.vols{i});   % This should never happen
-	mn = minval(st.vols{i});
+    if isempty(MnMx) || any(isnan(MnMx))
+      if strcmp(st.vols{i}.window,'auto')
+    mx = maxval(st.vols{i});   % This should never happen
+    mn = minval(st.vols{i});
       else
-	mx = st.vols{i}.window(2);
-	mn = st.vols{i}.window(1);
+    mx = st.vols{i}.window(2);
+    mn = st.vols{i}.window(1);
       end
       if ~isempty(MnMx)
-	if ~isnan(MnMx(1)), mn = MnMx(1); end
-	if ~isnan(MnMx(2)), mx = MnMx(2); end
+    if ~isnan(MnMx(1)), mn = MnMx(1); end
+    if ~isnan(MnMx(2)), mx = MnMx(2); end
       end
     else
       mn = MnMx(1); 
@@ -634,10 +634,10 @@ for i=valid_handles(st,handle)
     st.vols{i}.window = [mn mx];
     ax = st.vols{i}.cbar;
     set(ax,'Ylim',[mn mx]);
-    if isfield(st.vols{i},'cb1titl'),
+    if isfield(st.vols{i},'cb1titl')
       set(get(ax,'ylabel'),'String',st.vols{i}.cb1titl); 
     end
-    h = get(ax,'child');
+    h = get(ax,'Children');
     set(h(end),'Ydata',[mn mx]);
     sc2 = getscale2(st,i);
     ax2 = NaN;
@@ -649,20 +649,20 @@ for i=valid_handles(st,handle)
       % Create 2nd colorbar axes
       UIC = get(ax,'Children');
       ax2 = axes('Parent',st.fig,...
-		 'Position',get(ax,'Position'),...
-		 'Xlim',[0 1],'Ylim',[mn mx]*sc2,...
-		 'YAxisLocation','right',...
-		 'XAxisLocation','top',...
-		 'color','none','Xtick',[],...
-		 'HitTest','off',...
-		 'UIContextMenu',get(UIC,'UIContextMenu'));
+         'Position',get(ax,'Position'),...
+         'Xlim',[0 1],'Ylim',[mn mx]*sc2,...
+         'YAxisLocation','right',...
+         'XAxisLocation','top',...
+         'color','none','Xtick',[],...
+         'HitTest','off',...
+         'UIContextMenu',get(UIC,'UIContextMenu'));
       set(ax,'box','off','UserData',ax2);
     end
-    if ~isnan(ax2) & isfield(st.vols{i},'cb2titl'),
+    if ~isnan(ax2) && isfield(st.vols{i},'cb2titl')
       set(get(ax2,'ylabel'),'String',st.vols{i}.cb2titl); 
     end
   end
-end;
+end
 return;
 
 %-------------------------------------------------------------------------
@@ -718,7 +718,7 @@ return;
 %-------------------------------------------------------------------------
 function st = my_reset(st)
 %-------------------------------------------------------------------------
-if ~isempty(st) & isfield(st,'registry') & ishandle(st.registry.hMe),
+if ~isempty(st) && isfield(st,'registry') && ishandle(st.registry.hMe),
   delete(st.registry.hMe); st = rmfield(st,'registry');
 end;
 st = my_delete(st,1:24);
@@ -766,14 +766,14 @@ mn = [Inf Inf Inf];
 mx = -mn;
 for i=valid_handles(st,1:24),
   bb = [[1 1 1];st.vols{i}.dim(1:3)];
-  c = [	bb(1,1) bb(1,2) bb(1,3) 1
-	bb(1,1) bb(1,2) bb(2,3) 1
-	bb(1,1) bb(2,2) bb(1,3) 1
-	bb(1,1) bb(2,2) bb(2,3) 1
-	bb(2,1) bb(1,2) bb(1,3) 1
-	bb(2,1) bb(1,2) bb(2,3) 1
-	bb(2,1) bb(2,2) bb(1,3) 1
-	bb(2,1) bb(2,2) bb(2,3) 1]';
+  c = [ bb(1,1) bb(1,2) bb(1,3) 1
+    bb(1,1) bb(1,2) bb(2,3) 1
+    bb(1,1) bb(2,2) bb(1,3) 1
+    bb(1,1) bb(2,2) bb(2,3) 1
+    bb(2,1) bb(1,2) bb(1,3) 1
+    bb(2,1) bb(1,2) bb(2,3) 1
+    bb(2,1) bb(2,2) bb(1,3) 1
+    bb(2,1) bb(2,2) bb(2,3) 1]';
   tc = st.Space\(st.vols{i}.premul*st.vols{i}.mat)*c;
   tc = tc(1:3,:)';
   mx = max([tc ; mx]);
@@ -818,9 +818,9 @@ DeleteFcn = ''; %@() spmd_orthviews('fig',st.fig,'Delete',ii);
 V.ax = cell(3,1);
 for i=1:3,
   ax = axes('Visible','off','Parent',st.fig,'DeleteFcn',DeleteFcn,...
-	    'YDir','normal');
+        'YDir','normal');
   d  = image(0,'Tag','Transverse','Parent',ax,...
-	     'DeleteFcn',DeleteFcn);
+         'DeleteFcn',DeleteFcn);
   set(ax,'Ydir','normal');
   lx = line(0,0,'Parent',ax,'DeleteFcn',DeleteFcn);
   ly = line(0,0,'Parent',ax,'DeleteFcn',DeleteFcn);
@@ -876,27 +876,27 @@ for i=valid_handles(st,1:24),
   
   % Transverse
   set(st.vols{i}.ax{1}.ax,'Units','pixels', ...
-	'Position',[offx offy s*Dims(1) s*Dims(2)],...
-	'Units','normalized','Xlim',[0 TD(1)]+0.5,'Ylim',[0 TD(2)]+0.5,...
-	'Visible','on','XTick',[],'YTick',[]);
+    'Position',[offx offy s*Dims(1) s*Dims(2)],...
+    'Units','normalized','Xlim',[0 TD(1)]+0.5,'Ylim',[0 TD(2)]+0.5,...
+    'Visible','on','XTick',[],'YTick',[]);
   
   % Coronal
   set(st.vols{i}.ax{2}.ax,'Units','Pixels',...
-	'Position',[offx offy+s*Dims(2)+sky s*Dims(1) s*Dims(3)],...
-	'Units','normalized','Xlim',[0 CD(1)]+0.5,'Ylim',[0 CD(2)]+0.5,...
-	'Visible','on','XTick',[],'YTick',[]);
+    'Position',[offx offy+s*Dims(2)+sky s*Dims(1) s*Dims(3)],...
+    'Units','normalized','Xlim',[0 CD(1)]+0.5,'Ylim',[0 CD(2)]+0.5,...
+    'Visible','on','XTick',[],'YTick',[]);
   
   % Sagittal
   if st.mode == 0,
     set(st.vols{i}.ax{3}.ax,'Units','Pixels', 'Box','on',...
-	'Position',[offx+s*Dims(1)+skx offy s*Dims(3) s*Dims(2)],...
-	'Units','normalized','Xlim',[0 SD(1)]+0.5,'Ylim',[0 SD(2)]+0.5,...
-	'Visible','on','XTick',[],'YTick',[]);
+    'Position',[offx+s*Dims(1)+skx offy s*Dims(3) s*Dims(2)],...
+    'Units','normalized','Xlim',[0 SD(1)]+0.5,'Ylim',[0 SD(2)]+0.5,...
+    'Visible','on','XTick',[],'YTick',[]);
   else,
     set(st.vols{i}.ax{3}.ax,'Units','Pixels', 'Box','on',...
-	'Position',[offx+s*Dims(1)+skx offy+s*Dims(2)+sky s*Dims(2) s*Dims(3)],...
-	'Units','normalized','Xlim',[0 SD(1)]+0.5,'Ylim',[0 SD(2)]+0.5,...
-	'Visible','on','XTick',[],'YTick',[]);
+    'Position',[offx+s*Dims(1)+skx offy+s*Dims(2)+sky s*Dims(2) s*Dims(3)],...
+    'Units','normalized','Xlim',[0 SD(1)]+0.5,'Ylim',[0 SD(2)]+0.5,...
+    'Visible','on','XTick',[],'YTick',[]);
   end;
 end;
 return;
@@ -961,35 +961,35 @@ for i = valid_handles(st,arg1),
     
     % Do we need to recreate mip?
     if (isempty(mip.bbOld) | any(any(mip.bbOld~=bb)) | ...
-	isempty(mip.SpaceOld) | any(any(mip.SpaceOld~=st.Space)) | ...
-	isempty(mip.hldOld) | mip.hldOld~=st.hld | ...
-	isempty(mip.premulOld) | any(any(mip.premulOld~=st.vols{i}.premul)))
+    isempty(mip.SpaceOld) | any(any(mip.SpaceOld~=st.Space)) | ...
+    isempty(mip.hldOld) | mip.hldOld~=st.hld | ...
+    isempty(mip.premulOld) | any(any(mip.premulOld~=st.vols{i}.premul)))
       
       M = st.vols{i}.premul*st.vols{i}.mat;
-      TM0 = [	1 0 0 -bb(1,1)+1
-		0 1 0 -bb(1,2)+1
-		0 0 1 -bb(1,3)+1
-		0 0 0 1];
+      TM0 = [   1 0 0 -bb(1,1)+1
+        0 1 0 -bb(1,2)+1
+        0 0 1 -bb(1,3)+1
+        0 0 0 1];
       TM = inv(TM0*(st.Space\M));
       
       ok=1;
       eval('[imgt,imgc,imgs] = spmd_project_vol(st.vols{i},TM,Dims,st.hld);','ok=0');
       if (ok)
-	imgt = imgt';
-	imgc = imgc';
-	if st.mode == 1
-	  imgs = fliplr(imgs');
-	end
-	
-	st.vols{i}.mip.imgt = imgt;
-	st.vols{i}.mip.imgc = imgc;
-	st.vols{i}.mip.imgs = imgs;
-	
-	st.vols{i}.mip.bbOld = bb;
-	st.vols{i}.mip.SpaceOld = st.Space;
-	st.vols{i}.mip.hldOld = st.hld; 
-	st.vols{i}.mip.premulOld = st.vols{i}.premul;
-	
+    imgt = imgt';
+    imgc = imgc';
+    if st.mode == 1
+      imgs = fliplr(imgs');
+    end
+    
+    st.vols{i}.mip.imgt = imgt;
+    st.vols{i}.mip.imgc = imgc;
+    st.vols{i}.mip.imgs = imgs;
+    
+    st.vols{i}.mip.bbOld = bb;
+    st.vols{i}.mip.SpaceOld = st.Space;
+    st.vols{i}.mip.hldOld = st.hld; 
+    st.vols{i}.mip.premulOld = st.vols{i}.premul;
+    
       end
     else % used saved mip
       
@@ -1006,35 +1006,35 @@ for i = valid_handles(st,arg1),
   else % Not mip:
     
     M = st.vols{i}.premul*st.vols{i}.mat;
-    TM0 = [	1 0 0 -bb(1,1)+1
-		0 1 0 -bb(1,2)+1
-		0 0 1 -cent(3)
-		0 0 0 1];
+    TM0 = [ 1 0 0 -bb(1,1)+1
+        0 1 0 -bb(1,2)+1
+        0 0 1 -cent(3)
+        0 0 0 1];
     TM = inv(TM0*(st.Space\M));
     TD = Dims([1 2]);
     
-    CM0 = [	1 0 0 -bb(1,1)+1
-		0 0 1 -bb(1,3)+1
-		0 1 0 -cent(2)
-		0 0 0 1];
+    CM0 = [ 1 0 0 -bb(1,1)+1
+        0 0 1 -bb(1,3)+1
+        0 1 0 -cent(2)
+        0 0 0 1];
     CM = inv(CM0*(st.Space\M));
     CD = Dims([1 3]);
     
     if st.mode ==0,
-      SM0 = [	0 0 1 -bb(1,3)+1
-		0 1 0 -bb(1,2)+1
-		1 0 0 -cent(1)
-		0 0 0 1];
+      SM0 = [   0 0 1 -bb(1,3)+1
+        0 1 0 -bb(1,2)+1
+        1 0 0 -cent(1)
+        0 0 0 1];
       SM = inv(SM0*(st.Space\M)); SD = Dims([3 2]);
     else,
-      SM0 = [	0  1 0 -bb(1,2)+1
-		0  0 1 -bb(1,3)+1
-		1  0 0 -cent(1)
-		0  0 0 1];
-      SM0 = [	0 -1 0 +bb(2,2)+1
-		0  0 1 -bb(1,3)+1
-		1  0 0 -cent(1)
-		0  0 0 1];
+      SM0 = [   0  1 0 -bb(1,2)+1
+        0  0 1 -bb(1,3)+1
+        1  0 0 -cent(1)
+        0  0 0 1];
+      SM0 = [   0 -1 0 +bb(2,2)+1
+        0  0 1 -bb(1,3)+1
+        1  0 0 -cent(1)
+        0  0 0 1];
       SM = inv(SM0*(st.Space\M));
       SD = Dims([2 3]);
     end;
@@ -1044,10 +1044,10 @@ for i = valid_handles(st,arg1),
     eval('imgc  = (spm_slice_vol(st.vols{i},CM,CD,st.hld))'';','ok=0;');
     eval('imgs  = (spm_slice_vol(st.vols{i},SM,SD,st.hld))'';','ok=0;');
     
-    TMO  = [	1 0 0 -cent(1)
-		0 1 0 -cent(2)
-		0 0 1 -cent(3)
-		0 0 0 1];
+    TMO  = [    1 0 0 -cent(1)
+        0 1 0 -cent(2)
+        0 0 1 -cent(3)
+        0 0 0 1];
     TM   = inv(TMO*(st.Space\M)); TM = TM(1:3,4);
     st.vols{i}.in = spm_sample_vol(st.vols{i},TM(1),TM(2),TM(3),st.hld);
     st = show_inten(st,i);
@@ -1060,16 +1060,16 @@ for i = valid_handles(st,arg1),
     if strcmp(st.vols{i}.window,'auto'),
       mx = -Inf; mn = Inf;
       if ~isempty(imgt),
-	mx = max([mx max(max(imgt))]);
-	mn = min([mn min(min(imgt))]);
+    mx = max([mx max(max(imgt))]);
+    mn = min([mn min(min(imgt))]);
       end;
       if ~isempty(imgc),
-	mx = max([mx max(max(imgc))]);
-	mn = min([mn min(min(imgc))]);
+    mx = max([mx max(max(imgc))]);
+    mn = min([mn min(min(imgc))]);
       end;
       if ~isempty(imgs),
-	mx = max([mx max(max(imgs))]);
-	mn = min([mn min(min(imgs))]);
+    mx = max([mx max(max(imgs))]);
+    mn = min([mn min(min(imgs))]);
       end;
       if mx==mn, mx=mn+eps; end;
     else,
@@ -1085,148 +1085,148 @@ for i = valid_handles(st,arg1),
     
     if isfield(st.vols{i},'blobs'),
       if ~isfield(st.vols{i}.blobs{1},'colour'),
-	% Add blobs for display using the split colourmap
-	scal = 64/(mx-mn);
-	dcoff = -mn*scal;
-	imgt = imgt*scal+dcoff;
-	imgc = imgc*scal+dcoff;
-	imgs = imgs*scal+dcoff;
-	
-	vol = st.vols{i}.blobs{1}.vol;
-	mat = st.vols{i}.premul*st.vols{i}.blobs{1}.mat;
-	if isfield(st.vols{i}.blobs{1},'max'),
-	  mx = st.vols{i}.blobs{1}.max;
-	else,
-	  mx = max([eps maxval(st.vols{i}.blobs{1}.vol)]);
-	  st.vols{i}.blobs{1}.max = mx;
-	end;
-	if isfield(st.vols{i}.blobs{1},'min'),
-	  mn = st.vols{i}.blobs{1}.min;
-	else,
-	  mn = min([0 minval(st.vols{i}.blobs{1}.vol)]);
-	  st.vols{i}.blobs{1}.min = mn;
-	end;
-	
-	vol  = st.vols{i}.blobs{1}.vol;
-	M    = st.vols{i}.premul*st.vols{i}.blobs{1}.mat;
-	tmpt = spm_slice_vol(vol,inv(TM0*(st.Space\M)),TD,[0 NaN])';
-	tmpc = spm_slice_vol(vol,inv(CM0*(st.Space\M)),CD,[0 NaN])';
-	tmps = spm_slice_vol(vol,inv(SM0*(st.Space\M)),SD,[0 NaN])';
-	
-	sc   = 64/(mx-mn);
-	off  = 65.51-mn*sc;
-	msk  = find(finite(tmpt)); imgt(msk) = off+tmpt(msk)*sc;
-	msk  = find(finite(tmpc)); imgc(msk) = off+tmpc(msk)*sc;
-	msk  = find(finite(tmps)); imgs(msk) = off+tmps(msk)*sc;
-	
-	cmap = get(st.fig,'Colormap');
-	if size(cmap,1)~=128
-	  figure(st.fig)
-	  spm_figure('Colormap','gray-hot')
-	end;
+    % Add blobs for display using the split colourmap
+    scal = 64/(mx-mn);
+    dcoff = -mn*scal;
+    imgt = imgt*scal+dcoff;
+    imgc = imgc*scal+dcoff;
+    imgs = imgs*scal+dcoff;
+    
+    vol = st.vols{i}.blobs{1}.vol;
+    mat = st.vols{i}.premul*st.vols{i}.blobs{1}.mat;
+    if isfield(st.vols{i}.blobs{1},'max'),
+      mx = st.vols{i}.blobs{1}.max;
+    else,
+      mx = max([eps maxval(st.vols{i}.blobs{1}.vol)]);
+      st.vols{i}.blobs{1}.max = mx;
+    end;
+    if isfield(st.vols{i}.blobs{1},'min'),
+      mn = st.vols{i}.blobs{1}.min;
+    else,
+      mn = min([0 minval(st.vols{i}.blobs{1}.vol)]);
+      st.vols{i}.blobs{1}.min = mn;
+    end;
+    
+    vol  = st.vols{i}.blobs{1}.vol;
+    M    = st.vols{i}.premul*st.vols{i}.blobs{1}.mat;
+    tmpt = spm_slice_vol(vol,inv(TM0*(st.Space\M)),TD,[0 NaN])';
+    tmpc = spm_slice_vol(vol,inv(CM0*(st.Space\M)),CD,[0 NaN])';
+    tmps = spm_slice_vol(vol,inv(SM0*(st.Space\M)),SD,[0 NaN])';
+    
+    sc   = 64/(mx-mn);
+    off  = 65.51-mn*sc;
+    msk  = find(finite(tmpt)); imgt(msk) = off+tmpt(msk)*sc;
+    msk  = find(finite(tmpc)); imgc(msk) = off+tmpc(msk)*sc;
+    msk  = find(finite(tmps)); imgs(msk) = off+tmps(msk)*sc;
+    
+    cmap = get(st.fig,'Colormap');
+    if size(cmap,1)~=128
+      figure(st.fig)
+      spm_figure('Colormap','gray-hot')
+    end;
       elseif isstruct(st.vols{i}.blobs{1}.colour),
-	% Add blobs for display using a defined
-	% colourmap
-	
-	% colourmaps
-	gryc = [0:63]'*ones(1,3)/63;
-	actc = ...
-	    st.vols{1}.blobs{1}.colour.cmap;
-	actp = ...
-	    st.vols{1}.blobs{1}.colour.prop;
-	
-	% scale grayscale image, not finite -> black
-	imgt = scaletocmap(imgt,mn,mx,gryc,65);
-	imgc = scaletocmap(imgc,mn,mx,gryc,65);
-	imgs = scaletocmap(imgs,mn,mx,gryc,65);
-	gryc = [gryc; 0 0 0];
-	
-	% get max for blob image
-	vol = st.vols{i}.blobs{1}.vol;
-	mat = st.vols{i}.premul*st.vols{i}.blobs{1}.mat;
-	if isfield(st.vols{i}.blobs{1},'max'),
-	  cmx = st.vols{i}.blobs{1}.max;
-	else,
-	  cmx = max([eps maxval(st.vols{i}.blobs{1}.vol)]);
-	end;
-	
-	% get blob data
-	vol  = st.vols{i}.blobs{1}.vol;
-	M    = st.vols{i}.premul*st.vols{i}.blobs{1}.mat;
-	tmpt = spm_slice_vol(vol,inv(TM0*(st.Space\M)),TD,[0 NaN])';
-	tmpc = spm_slice_vol(vol,inv(CM0*(st.Space\M)),CD,[0 NaN])';
-	tmps = spm_slice_vol(vol,inv(SM0*(st.Space\M)),SD,[0 NaN])';
-	
-	% actimg scaled round 0, black NaNs
-	topc = size(actc,1)+1;
-	tmpt = scaletocmap(tmpt,-cmx,cmx,actc,topc);
-	tmpc = scaletocmap(tmpc,-cmx,cmx,actc,topc);
-	tmps = scaletocmap(tmps,-cmx,cmx,actc,topc);
-	actc = [actc; 0 0 0];
-	
-	% combine gray and blob data to
-	% truecolour
-	imgt = reshape(actc(tmpt(:),:)*actp+ ...
-		       gryc(imgt(:),:)*(1-actp), ...
-		       [size(imgt) 3]);
-	imgc = reshape(actc(tmpc(:),:)*actp+ ...
-		       gryc(imgc(:),:)*(1-actp), ...
-		       [size(imgc) 3]);
-	imgs = reshape(actc(tmps(:),:)*actp+ ...
-		       gryc(imgs(:),:)*(1-actp), ...
-		       [size(imgs) 3]);
-	
-	
+    % Add blobs for display using a defined
+    % colourmap
+    
+    % colourmaps
+    gryc = [0:63]'*ones(1,3)/63;
+    actc = ...
+        st.vols{1}.blobs{1}.colour.cmap;
+    actp = ...
+        st.vols{1}.blobs{1}.colour.prop;
+    
+    % scale grayscale image, not finite -> black
+    imgt = scaletocmap(imgt,mn,mx,gryc,65);
+    imgc = scaletocmap(imgc,mn,mx,gryc,65);
+    imgs = scaletocmap(imgs,mn,mx,gryc,65);
+    gryc = [gryc; 0 0 0];
+    
+    % get max for blob image
+    vol = st.vols{i}.blobs{1}.vol;
+    mat = st.vols{i}.premul*st.vols{i}.blobs{1}.mat;
+    if isfield(st.vols{i}.blobs{1},'max'),
+      cmx = st.vols{i}.blobs{1}.max;
+    else,
+      cmx = max([eps maxval(st.vols{i}.blobs{1}.vol)]);
+    end;
+    
+    % get blob data
+    vol  = st.vols{i}.blobs{1}.vol;
+    M    = st.vols{i}.premul*st.vols{i}.blobs{1}.mat;
+    tmpt = spm_slice_vol(vol,inv(TM0*(st.Space\M)),TD,[0 NaN])';
+    tmpc = spm_slice_vol(vol,inv(CM0*(st.Space\M)),CD,[0 NaN])';
+    tmps = spm_slice_vol(vol,inv(SM0*(st.Space\M)),SD,[0 NaN])';
+    
+    % actimg scaled round 0, black NaNs
+    topc = size(actc,1)+1;
+    tmpt = scaletocmap(tmpt,-cmx,cmx,actc,topc);
+    tmpc = scaletocmap(tmpc,-cmx,cmx,actc,topc);
+    tmps = scaletocmap(tmps,-cmx,cmx,actc,topc);
+    actc = [actc; 0 0 0];
+    
+    % combine gray and blob data to
+    % truecolour
+    imgt = reshape(actc(tmpt(:),:)*actp+ ...
+               gryc(imgt(:),:)*(1-actp), ...
+               [size(imgt) 3]);
+    imgc = reshape(actc(tmpc(:),:)*actp+ ...
+               gryc(imgc(:),:)*(1-actp), ...
+               [size(imgc) 3]);
+    imgs = reshape(actc(tmps(:),:)*actp+ ...
+               gryc(imgs(:),:)*(1-actp), ...
+               [size(imgs) 3]);
+    
+    
       else,
-	% Add full colour blobs - several sets at once
-	scal = 1/(mx-mn);
-	dcoff = -mn*scal;
-	imgt = repmat(imgt*scal+dcoff,[1,1,3]);
-	imgc = repmat(imgc*scal+dcoff,[1,1,3]);
-	imgs = repmat(imgs*scal+dcoff,[1,1,3]);
-	
-	for j=1:length(st.vols{i}.blobs),
-	  vol = st.vols{i}.blobs{j}.vol;
-	  mat = st.vols{i}.premul*st.vols{i}.blobs{j}.mat;
-	  if isfield(st.vols{i}.blobs{j},'colour'),
-	    colour = st.vols{i}.blobs{j}.colour;
-	  else,
-	    colour = [1 0 0];
-	  end;
-	  if isfield(st.vols{i}.blobs{j},'max'),
-	    mx = st.vols{i}.blobs{j}.max;
-	  else,
-	    mx = max([eps max(st.vols{i}.blobs{j}.vol(:))]);
-	    st.vols{i}.blobs{j}.max = mx;
-	  end;
-	  if isfield(st.vols{i}.blobs{j},'min'),
-	    mn = st.vols{i}.blobs{j}.min;
-	  else,
-	    mn = min([0 min(st.vols{i}.blobs{j}.vol(:))]);
-	    st.vols{i}.blobs{j}.min = mn;
-	  end;
-	  
-	  vol  = st.vols{i}.blobs{j}.vol;
-	  M    = st.vols{i}.premul*st.vols{i}.blobs{j}.mat;
-	  tmpt = spm_slice_vol(vol,inv(TM0*(st.Space\M)),TD,[0 NaN])'/(mx-mn)+mn;
-	  tmpc = spm_slice_vol(vol,inv(CM0*(st.Space\M)),CD,[0 NaN])'/(mx-mn)+mn;
-	  tmps = spm_slice_vol(vol,inv(SM0*(st.Space\M)),SD,[0 NaN])'/(mx-mn)+mn;
-	  tmpt(find(~finite(tmpt))) = 0;
-	  tmpc(find(~finite(tmpc))) = 0;
-	  tmps(find(~finite(tmps))) = 0;
-	  
-	  tmp  = cat(3,tmpt*colour(1),tmpt*colour(2),tmpt*colour(3));
-	  imgt = (repmat(1-tmpt,[1 1 3]).*imgt+tmp);
-	  tmp = find(imgt<0); imgt(tmp)=0; tmp = find(imgt>1); imgt(tmp)=1;
-	  
-	  tmp  = cat(3,tmpc*colour(1),tmpc*colour(2),tmpc*colour(3));
-	  imgc = (repmat(1-tmpc,[1 1 3]).*imgc+tmp);
-	  tmp = find(imgc<0); imgc(tmp)=0; tmp = find(imgc>1); imgc(tmp)=1;
-	  
-	  tmp  = cat(3,tmps*colour(1),tmps*colour(2),tmps*colour(3));
-	  imgs = (repmat(1-tmps,[1 1 3]).*imgs+tmp);
-	  tmp = find(imgs<0); imgs(tmp)=0; tmp = find(imgs>1); imgs(tmp)=1;
-	end;
+    % Add full colour blobs - several sets at once
+    scal = 1/(mx-mn);
+    dcoff = -mn*scal;
+    imgt = repmat(imgt*scal+dcoff,[1,1,3]);
+    imgc = repmat(imgc*scal+dcoff,[1,1,3]);
+    imgs = repmat(imgs*scal+dcoff,[1,1,3]);
+    
+    for j=1:length(st.vols{i}.blobs),
+      vol = st.vols{i}.blobs{j}.vol;
+      mat = st.vols{i}.premul*st.vols{i}.blobs{j}.mat;
+      if isfield(st.vols{i}.blobs{j},'colour'),
+        colour = st.vols{i}.blobs{j}.colour;
+      else,
+        colour = [1 0 0];
+      end;
+      if isfield(st.vols{i}.blobs{j},'max'),
+        mx = st.vols{i}.blobs{j}.max;
+      else,
+        mx = max([eps max(st.vols{i}.blobs{j}.vol(:))]);
+        st.vols{i}.blobs{j}.max = mx;
+      end;
+      if isfield(st.vols{i}.blobs{j},'min'),
+        mn = st.vols{i}.blobs{j}.min;
+      else,
+        mn = min([0 min(st.vols{i}.blobs{j}.vol(:))]);
+        st.vols{i}.blobs{j}.min = mn;
+      end;
+      
+      vol  = st.vols{i}.blobs{j}.vol;
+      M    = st.vols{i}.premul*st.vols{i}.blobs{j}.mat;
+      tmpt = spm_slice_vol(vol,inv(TM0*(st.Space\M)),TD,[0 NaN])'/(mx-mn)+mn;
+      tmpc = spm_slice_vol(vol,inv(CM0*(st.Space\M)),CD,[0 NaN])'/(mx-mn)+mn;
+      tmps = spm_slice_vol(vol,inv(SM0*(st.Space\M)),SD,[0 NaN])'/(mx-mn)+mn;
+      tmpt(find(~finite(tmpt))) = 0;
+      tmpc(find(~finite(tmpc))) = 0;
+      tmps(find(~finite(tmps))) = 0;
+      
+      tmp  = cat(3,tmpt*colour(1),tmpt*colour(2),tmpt*colour(3));
+      imgt = (repmat(1-tmpt,[1 1 3]).*imgt+tmp);
+      tmp = find(imgt<0); imgt(tmp)=0; tmp = find(imgt>1); imgt(tmp)=1;
+      
+      tmp  = cat(3,tmpc*colour(1),tmpc*colour(2),tmpc*colour(3));
+      imgc = (repmat(1-tmpc,[1 1 3]).*imgc+tmp);
+      tmp = find(imgc<0); imgc(tmp)=0; tmp = find(imgc>1); imgc(tmp)=1;
+      
+      tmp  = cat(3,tmps*colour(1),tmps*colour(2),tmps*colour(3));
+      imgs = (repmat(1-tmps,[1 1 3]).*imgs+tmp);
+      tmp = find(imgs<0); imgs(tmp)=0; tmp = find(imgs>1); imgs(tmp)=1;
+    end;
       end;
     else,
       scal = 64/(mx-mn);
@@ -1255,37 +1255,37 @@ for i = valid_handles(st,arg1),
     
     set(st.vols{i}.ax{1}.d,'ButtonDownFcn',callback, 'Cdata',imgt);
     set(st.vols{i}.ax{1}.lx,'ButtonDownFcn',callback,...
-		      'Xdata',[0 Gap(1,:) TD(1)]+0.5,...
-		      'Ydata',[1 GapPt 1]*(cent(2)-bb(1,2)+1));
+              'Xdata',[0 Gap(1,:) TD(1)]+0.5,...
+              'Ydata',[1 GapPt 1]*(cent(2)-bb(1,2)+1));
     set(st.vols{i}.ax{1}.ly,'ButtonDownFcn',callback,...
-		      'Ydata',[0 Gap(2,:) TD(2)]+0.5,...
-		      'Xdata',[1 GapPt 1]*(cent(1)-bb(1,1)+1));
+              'Ydata',[0 Gap(2,:) TD(2)]+0.5,...
+              'Xdata',[1 GapPt 1]*(cent(1)-bb(1,1)+1));
     
     set(st.vols{i}.ax{2}.d,'ButtonDownFcn',callback, 'Cdata',imgc);
     set(st.vols{i}.ax{2}.lx,'ButtonDownFcn',callback,...
-		      'Xdata',[0 Gap(1,:) CD(1)]+0.5,...
-		      'Ydata',[1 GapPt 1]*(cent(3)-bb(1,3)+1));
+              'Xdata',[0 Gap(1,:) CD(1)]+0.5,...
+              'Ydata',[1 GapPt 1]*(cent(3)-bb(1,3)+1));
     set(st.vols{i}.ax{2}.ly,'ButtonDownFcn',callback,...
-		      'Ydata',[0 Gap(3,:) CD(2)]+0.5,...
-		      'Xdata',[1 GapPt 1]*(cent(1)-bb(1,1)+1));
+              'Ydata',[0 Gap(3,:) CD(2)]+0.5,...
+              'Xdata',[1 GapPt 1]*(cent(1)-bb(1,1)+1));
     
     set(st.vols{i}.ax{3}.d,'ButtonDownFcn',callback,'Cdata',imgs);
     if st.mode ==0,
       set(st.vols{i}.ax{3}.lx,'ButtonDownFcn',callback,...
-			'Xdata',[0 Gap(3,:) SD(1)]+0.5,...
-			'Ydata',[1 GapPt 1]*(cent(2)-bb(1,2)+1));
+            'Xdata',[0 Gap(3,:) SD(1)]+0.5,...
+            'Ydata',[1 GapPt 1]*(cent(2)-bb(1,2)+1));
       set(st.vols{i}.ax{3}.ly,'ButtonDownFcn',callback,...
-			'Ydata',[0 Gap(2,:) SD(2)]+0.5,...
-			'Xdata',[1 GapPt 1]*(cent(3)-bb(1,3)+1));
+            'Ydata',[0 Gap(2,:) SD(2)]+0.5,...
+            'Xdata',[1 GapPt 1]*(cent(3)-bb(1,3)+1));
     else,
       Gap(2,:) = (bb(2,2)+1-cent(2))*[1 NaN 1] + median(GapSp);
       
       set(st.vols{i}.ax{3}.lx,'ButtonDownFcn',callback,...
-			'Xdata',[0 Gap(2,:) SD(1)]+0.5,...
-			'Ydata',[1 GapPt 1]*(cent(3)-bb(1,3)+1));
+            'Xdata',[0 Gap(2,:) SD(1)]+0.5,...
+            'Ydata',[1 GapPt 1]*(cent(3)-bb(1,3)+1));
       set(st.vols{i}.ax{3}.ly,'ButtonDownFcn',callback,...
-			'Ydata',[0 Gap(3,:) SD(2)]+0.5,...
-			'Xdata',[1 GapPt 1]*(bb(2,2)+1-cent(2)));
+            'Ydata',[0 Gap(3,:) SD(2)]+0.5,...
+            'Xdata',[1 GapPt 1]*(bb(2,2)+1-cent(2)));
     end;
   end;
 end;
@@ -1328,11 +1328,11 @@ for i=valid_handles(st,1:24),
   for j=1:3,
     if ~isempty(obj),
       if any([st.vols{i}.ax{j}.d  ...
-	      st.vols{i}.ax{j}.lx ...
-	      st.vols{i}.ax{j}.ly]== obj)
-	cp = get(get(obj,'Parent'),'CurrentPoint');
+          st.vols{i}.ax{j}.lx ...
+          st.vols{i}.ax{j}.ly]== obj)
+    cp = get(get(obj,'Parent'),'CurrentPoint');
       elseif (st.vols{i}.ax{j}.ax == obj),
-	cp = get(obj,'CurrentPoint');
+    cp = get(obj,'CurrentPoint');
       end;
     end;
     if ~isempty(cp),
@@ -1341,15 +1341,15 @@ for i=valid_handles(st,1:24),
       cent = is(1:3,1:3)*st.centre(:) + is(1:3,4);
       switch j,
        case 1,
-	cent([1 2])=[cp(1)+st.bb(1,1)-1 cp(2)+st.bb(1,2)-1];
+    cent([1 2])=[cp(1)+st.bb(1,1)-1 cp(2)+st.bb(1,2)-1];
        case 2,
-	cent([1 3])=[cp(1)+st.bb(1,1)-1 cp(2)+st.bb(1,3)-1];
+    cent([1 3])=[cp(1)+st.bb(1,1)-1 cp(2)+st.bb(1,3)-1];
        case 3,
-	if st.mode ==0,
-	  cent([3 2])=[cp(1)+st.bb(1,3)-1 cp(2)+st.bb(1,2)-1];
-	else,
-	  cent([2 3])=[st.bb(2,2)+1-cp(1) cp(2)+st.bb(1,3)-1];
-	end;
+    if st.mode ==0,
+      cent([3 2])=[cp(1)+st.bb(1,3)-1 cp(2)+st.bb(1,2)-1];
+    else,
+      cent([2 3])=[st.bb(2,2)+1-cp(1) cp(2)+st.bb(1,3)-1];
+    end;
       end;
       break;
     end;
@@ -1377,8 +1377,8 @@ if nargin<1
 end
 bb      = [ [-78 78]' [-112 76]' [-50 85]' ];
 st      = struct('n', 0, 'vols',[], 'bb',bb,'Space',eye(4),...
-		 'centre',[0 0 0],'callback',';','xhairs',1,...
-		 'xhairsgap',0.05,'hld',0,'fig',fig,'mode',1);
+         'centre',[0 0 0],'callback',';','xhairs',1,...
+         'xhairsgap',0.05,'hld',0,'fig',fig,'mode',1);
 st.vols = cell(24,1);
 return;
 
@@ -1488,15 +1488,15 @@ for i = valid_handles(st,hndl)
     axpos1 = get(st.vols{i}.ax{1}.ax,'Position');
     axpos3 = get(st.vols{i}.ax{3}.ax,'Position');
     ax = axes('Parent',st.fig,...
-	      'Position',[axpos3(1)     axpos1(2)...
-		    axpos3(3)     area(4)*0.08],...
-	      'visible','off');
+          'Position',[axpos3(1)     axpos1(2)...
+            axpos3(3)     area(4)*0.08],...
+          'visible','off');
     st.vols{i}.in_ax = ax;
     if isnan(sc)
       h = text(1,0.25,str,'HorizontalAlignment', 'right','Parent',ax);
     else
       h = [text(1,0.75,str,'HorizontalAlignment', 'right','Parent',ax)...
-	   text(1,0.25,str2,'HorizontalAlignment', 'right','Parent',ax)];
+       text(1,0.25,str2,'HorizontalAlignment', 'right','Parent',ax)];
     end
     st.vols{i}.in_h = h;
   end

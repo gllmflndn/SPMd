@@ -10,7 +10,7 @@ function [stat,p,coef] = spmd_stat(action,res,X,para,df)
 % The available statistics are:
 %  1. Durbin-Watson statistic          'dw'
 %  2. Cook-Weisberg score statistic    'score'
-%  3. Shapiro-Wilk satatistic          'sw'
+%  3. Shapiro-Wilk statistic           'sw'
 %  4. Proportion of outlier            'outl'
 %  5. Cumulative periodogram statistic 'cp'
 %__________________________________________________________________________
@@ -58,11 +58,11 @@ switch lower(action)
         %------------------------------------------------------------------
         %-Durbin-Watson statistic
         %------------------------------------------------------------------
-        DW   = sum((diff(res)).^2)./ResSS;	%-Durbin-Watson statistic
+        DW   = sum((diff(res)).^2)./ResSS;  %-Durbin-Watson statistic
         stat = coef(1)*(4-DW)./(coef(2)*DW);
-        p	 = 1-betainc(1-DW/4,coef(2), coef(1));	%-DW probability
-        p	 = p+(p==0)*eps;
-        p	 = -log10(p);
+        p    = 1-betainc(1-DW/4,coef(2), coef(1));  %-DW probability
+        p    = p+(p==0)*eps;
+        p    = -log10(p);
         stat = {stat};
         
     case 'score'
@@ -75,9 +75,9 @@ switch lower(action)
         [nrowSSr, ncolSSr] = size(meanSSr);
         
         if ncolSSr > 1
-            SYY	= sum((SSr-repmat(meanSSr,nScan,1)).^2); %-scaled squared residual
+            SYY = sum((SSr-repmat(meanSSr,nScan,1)).^2); %-scaled squared residual
         else
-            SYY	= sum((SSr-repmat(meanSSr(1,1),nScan,1)).^2); %-scaled squared residual
+            SYY = sum((SSr-repmat(meanSSr(1,1),nScan,1)).^2); %-scaled squared residual
         end
         
         
@@ -109,10 +109,10 @@ switch lower(action)
             def   = 1;
         end
         
-        stat = (SYY-sum(Rres.^2))./2;		%-Score statistics
-        p	 = 1-spm_Xcdf(stat,def); 	        %-Score probability
-        p	 = p+(p==0)*eps;
-        p	 = -log10(p);
+        stat = (SYY-sum(Rres.^2))./2;       %-Score statistics
+        p    = 1-spm_Xcdf(stat,def);            %-Score probability
+        p    = p+(p==0)*eps;
+        p    = -log10(p);
         stat = {stat};
         
     case 'sw'
@@ -183,7 +183,7 @@ switch lower(action)
             coef = para;
         end
         
-        MSE	   = ResSS./df;                   %-Mean squared error
+        MSE    = ResSS./df;                   %-Mean squared error
         Outh   = X*pinv(X);                   %-leverage
         Outh   = diag(Outh);
         I_null = (1-Outh)<sqrt(eps);          %-Zero variance indicates
@@ -191,7 +191,7 @@ switch lower(action)
         Outh(I_null) = 0;                     %-Residual zero, so this
                                               % can be whatever
         Sres   = res.*((1-Outh)*MSE).^(-0.5); %-standardized residual
-        Iout   = (abs(Sres) > coef);	      %-index of outliers
+        Iout   = (abs(Sres) > coef);          %-index of outliers
         
         %-spatial outlier count
         %------------------------------------------------------------------
@@ -236,7 +236,7 @@ switch lower(action)
         
         %-Cumulative periodogram
         %------------------------------------------------------------------
-        power		 = zeros(floor((nScan-nVar-1)/2),nVox);
+        power        = zeros(floor((nScan-nVar-1)/2),nVox);
         
         for i = 1:nVox
             %- Calculate BLUS residual vector
@@ -263,7 +263,7 @@ switch lower(action)
         %-Calculate cumulative periodogram
         CPseries    = cumsum(power);
         Flength     = size(CPseries,1);
-        CPS	= CPseries./(repmat(sum(power),Flength,1));
+        CPS = CPseries./(repmat(sum(power),Flength,1));
         
         %-setup the upper and lower statistic for the Cumulative periodogram
         MaxA1 = abs(CPS(1:Flength-1,:)-...
@@ -285,5 +285,5 @@ switch lower(action)
         stat = {stat sum(power,2) freq};
         
     otherwise
-        warning('Unknown action string');
+        warning(sprintf('Unknown action string "%s"',action));
 end
