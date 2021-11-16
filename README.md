@@ -24,7 +24,8 @@ Technical Report.
 
 ### Interface
 
-  * [spm_diagnosis.m](https://github.com/gllmflndn/SPMd/blob/main/spm_diagnosis.m): batch interface `Compute` / `Report`
+  * [spm_diagnosis.m](https://github.com/gllmflndn/SPMd/blob/main/spm_diagnosis.m): (old) GUI
+  * [tbx_cfg_spmd.m](https://github.com/gllmflndn/SPMd/blob/main/tbx_cfg_spmd.m): (WIP) batch interface
 
 ### Computation
 
@@ -36,18 +37,18 @@ Technical Report.
 
 ### Visualisation
 
-  * [spmd_check_registration.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_check_registration.m): see spm_check_registration.m
-    * [spmd_SptlBar.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_SptlBar.m)
   * [spmd_MD.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_MD.m)
     * [spmd_MD_plot.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_MD_plot.m)
       * [spmd_Nplot.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_Nplot.m)
   * [spmd_MS.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_MS.m)
-  * [spmd_mtsview.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_mtsview.m)
-  * [spmd_orthviews.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_orthviews.m): see spm_orthviews.m
-  * [spmd_pointer.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_pointer.m): see spm_XYZreg.m
   * [spmd_SD.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_SD.m)
   * [spmd_SS.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_SS.m)
 
-### Unused
+### Utilities
 
-  * [spmd_getTS.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_getTS.m): see spm_get_data.m
+  * [spmd_check_registration.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_check_registration.m): see spm_check_registration.m
+    * [spmd_SptlBar.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_SptlBar.m)
+  * [spmd_mtsview.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_mtsview.m)
+  * [spmd_orthviews.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_orthviews.m): see spm_orthviews.m
+  * [spmd_pointer.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_pointer.m): see spm_XYZreg.m
+  * [spmd_getTS.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_getTS.m): (unused) see spm_get_data.m

@@ -34,6 +34,10 @@ function spmd_comp_SS(varargin)
 %__________________________________________________________________________
 
 
+if ~nargin
+    varargin = {'predint','toutlier','global','pg','regparm'};
+end
+
 %-Check if SPMd_SS.mat in current directory
 %--------------------------------------------------------------------------
 if spm_existfile(fullfile(pwd,'SPMd_SS.mat'))
@@ -92,6 +96,8 @@ else
     swd = pwd;
 end
 
+SS.SPM.swd = swd;
+
 %-If there is no high pass filter, then the reduced model is model with
 % only intercept term.
 %--------------------------------------------------------------------------
@@ -106,91 +112,85 @@ SS.xX  = xX;
 SS.VY  = VY;
 SS.RX  = [];
 
-%-Action to take
+%-Scan summary variables
 %--------------------------------------------------------------------------
-if nargin == 0
-    varargin = {'predint','toutlier','global','pg','regparm'};
-end
-
-a = 1;
-
-while (a <= length(varargin))
-    switch lower(varargin{a})
+for i=1:numel(varargin)
+    
+    switch lower(varargin{i})
         
+        %-Predictors of interest
+        %------------------------------------------------------------------
         case 'predint'
-            [ExpPred,PredInt,PredNms] = GetExpPred(xSPM,[]); % predictors of interest
-            Exp.name    = 'Predictors of interest';
-            Exp.Ipi     = PredInt;
-            Exp.Pred    = ExpPred;
-            Exp.PredNms = PredNms;
-            SS.Exp      = Exp;
-            a = a+1;
+            [ExpPred,PredInt,PredNms] = GetExpPred(xSPM,[]);
+            Exp.name     = 'Predictors of interest';
+            Exp.Ipi      = PredInt;
+            Exp.Pred     = ExpPred;
+            Exp.PredNms  = PredNms;
+            SS.Exp       = Exp;
             
+        %-Outlier Count
+        %------------------------------------------------------------------
         case 'toutlier'
-            Toutlier     = GetTOutl(SS,xSPM);                  % Outlier Count
+            Toutlier     = GetTOutl(SS,xSPM);
             Toutl.name   = 'Spatial outlier rate (% of nominal)';
             Toutl.ts     = Toutlier;
-            Toutl.prop   = (Toutlier/(2*spm_Ncdf(-3)*S))*100;  % The percent of the number of
-            % outliers obs of number expected
+            Toutl.prop   = (Toutlier/(2*spm_Ncdf(-3)*S))*100; % The percent
+                           %of the number of outliers obs of number expected
             SS.Toutl     = Toutl;
-            a = a+1;
-            
+           
+        %-Global signal
+        %------------------------------------------------------------------
         case 'global'
-            glob         = GetGlob(SS);                        % Global signal
+            glob         = GetGlob(SS);
             
             %-Calculate the F-test for the correlation between the temporal
             % measurements to the predictors.
             %--------------------------------------------------------------
-            [ts,Stat]     = GetF(glob,rDM,fDM);
-            GX.name       = 'Temporal Global Signal';
-            GX.ts         = ts(:,1);
-            GX.Est        = ts(:,2:3);
-            GX.Fstat      = Stat(1);
-            GX.P          = Stat(2);
-            SS.GX         = GX;
+            [ts,Stat]    = GetF(glob,rDM,fDM);
+            GX.name      = 'Temporal Global Signal';
+            GX.ts        = ts(:,1);
+            GX.Est       = ts(:,2:3);
+            GX.Fstat     = Stat(1);
+            GX.P         = Stat(2);
+            SS.GX        = GX;
             
-            a = a+1;
-            
+        %-Periodogram
+        %------------------------------------------------------------------
         case 'pg'
-            [power,freq]   = GetPG(SS,xSPM);                   % Periodogram
-            PG.name        = 'Periodogram';
-            PG.power       = power;
-            PG.freq        = freq;
-            SS.PG          = PG;
-            a = a+1;
+            [power,freq] = GetPG(SS,xSPM);
+            PG.name      = 'Periodogram';
+            PG.power     = power;
+            PG.freq      = freq;
+            SS.PG        = PG;
             
+        %-Registration parameters
+        %------------------------------------------------------------------
         case 'regparm'
-            RegParm     = GetRegParm(VY);                      % Registration parameters
+            RegParm      = GetRegParm(VY);
             
             %-Calculate the F-test for the correlation between the temporal
             % measurements to the predictors.
             %--------------------------------------------------------------
+            RX = [];
             if ~isempty(RegParm)
-                RegName     = char('x-shift','y-shift','z-shift','pitch','roll','yaw');
-                ParmI       = 1:6;
-                % close(gcf)
-                ParmI       = sort(ParmI);
-                for i = 1:length(ParmI)
-                    [ts,Stat]   = GetF(RegParm(:,ParmI(i)),rDM,fDM);
-                    RX(i).name  = RegName(ParmI(i),:);
-                    RX(i).ts    = ts(:,1);
-                    RX(i).Est   = ts(:,2:3);
-                    RX(i).Fstat = Stat(1);
-                    RX(i).P     = Stat(2);
-                    clear ts Stat
+                RegName  = char('x-shift','y-shift','z-shift','pitch','roll','yaw');
+                ParmI    = 1:6;
+                ParmI    = sort(ParmI);
+                for j=1:length(ParmI)
+                    [ts,Stat]   = GetF(RegParm(:,ParmI(j)),rDM,fDM);
+                    RX(j).name  = RegName(ParmI(j),:);
+                    RX(j).ts    = ts(:,1);
+                    RX(j).Est   = ts(:,2:3);
+                    RX(j).Fstat = Stat(1);
+                    RX(j).P     = Stat(2);
                 end
-            else
-                RX            = [];
             end
-            SS.RX           = RX;
-            a = a+1;
+            SS.RX = RX;
             
         otherwise
-            error('Unknown command');
+            error('Unknown command.');
     end
 end
-
-SS.SPM.swd = swd;
 
 try
     save SPMd_SS SS -append
