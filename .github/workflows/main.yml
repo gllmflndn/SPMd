@@ -13,9 +13,11 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    env:
-      GLM_PATH: $GITHUB_WORKSPACE/GLM
     steps:
+      - name: Set environment variables
+        run: |
+          echo "GLM_PATH=$GITHUB_WORKSPACE/GLM" >> $GITHUB_ENV
+
       - name: Checkout SPM12
         uses: actions/checkout@v2
         with:
