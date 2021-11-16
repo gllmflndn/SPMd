@@ -1,0 +1,47 @@
+name: Build & Test
+
+on:
+  push:
+    branches:
+      - main
+
+  release:
+    types: [published]
+
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name : Checkout SPMd
+        uses: actions/checkout@v2
+        with:
+          path: SPMd
+
+      - name: Checkout SPM12
+        uses: actions/checkout@v2
+        with:
+          repository: spm/spm12
+          path: spm12
+
+      - name: Install GNU Octave
+        run: |
+          sudo apt-get install octave liboctave-dev
+          octave --version
+
+      - name: Install SPM12 software
+        run: |
+          make -C spm12/src PLATFORM=octave distclean
+          make -C spm12/src PLATFORM=octave
+          make -C spm12/src PLATFORM=octave install
+          octave --no-gui --no-window-system --silent --eval "addpath (fullfile(pwd,'spm12')); savepath (); spm ('Version')"
+
+      - name: Install SPMd toolbox
+        run: octave --no-gui --no-window-system --silent --eval "addpath (fullfile(pwd,'SPMd')); savepath ();"
+
+      - name: Install dataset
+        run: octave --no-gui --no-window-system --silent --eval "spm run https://www.fil.ion.ucl.ac.uk/spm/data/auditory/auditory_spm12_batch.m"
+
+      - name: Run tests
+        run: octave --no-gui --no-window-system --silent --eval "cd tests; results = spmd_runtests; assert(all(~[results.Failed]))"
