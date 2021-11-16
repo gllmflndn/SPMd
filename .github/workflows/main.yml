@@ -13,6 +13,8 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    env:
+      GLM_PATH: $GITHUB_WORKSPACE/GLM
     steps:
       - name: Checkout SPM12
         uses: actions/checkout@v2
@@ -38,10 +40,13 @@ jobs:
           octave --no-gui --no-window-system --silent --eval "addpath (fullfile(pwd,'spm12')); savepath (); spm ('Version')"
 
       - name: Install SPMd toolbox
-        run: octave --no-gui --no-window-system --silent --eval "addpath (fullfile(pwd,'spm12','toolbox','SPMd')); savepath ();"
+        run: |
+          octave --no-gui --no-window-system --silent --eval "addpath (fullfile(pwd,'spm12','toolbox','SPMd')); savepath ();"
 
       - name: Install dataset
-        run: octave --no-gui --no-window-system --silent --eval "spm run https://www.fil.ion.ucl.ac.uk/spm/data/auditory/auditory_spm12_batch.m"
+        run: |
+          octave --no-gui --no-window-system --silent --eval "spm run https://www.fil.ion.ucl.ac.uk/spm/data/auditory/auditory_spm12_batch.m"
 
       - name: Run tests
-        run: octave --no-gui --no-window-system --silent --eval "cd SPMd/tests; results = spmd_runtests; assert(all(~[results.Failed]))"
+        run: |
+          octave --no-gui --no-window-system --silent --eval "cd spm12/toolbox/SPMd/tests; results = spmd_runtests; assert(all(~[results.Failed]))"
