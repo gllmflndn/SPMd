@@ -44,4 +44,4 @@ jobs:
         run: octave --no-gui --no-window-system --silent --eval "spm run https://www.fil.ion.ucl.ac.uk/spm/data/auditory/auditory_spm12_batch.m"
 
       - name: Run tests
-        run: octave --no-gui --no-window-system --silent --eval "cd tests; results = spmd_runtests; assert(all(~[results.Failed]))"
+        run: octave --no-gui --no-window-system --silent --eval "cd SPMd/tests; results = spmd_runtests; assert(all(~[results.Failed]))"
