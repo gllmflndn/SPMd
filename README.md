@@ -1,5 +1,7 @@
 # SPMd toolbox
 
+[![Build & Test](https://github.com/gllmflndn/SPMd/actions/workflows/main.yml/badge.svg)](https://github.com/gllmflndn/SPMd/actions/workflows/main.yml)
+
 ## Statistical Parametric Mapping Diagnosis
 
 SPMd is a toolbox for SPM which you can use to establish the validity of inferences in fMRI modeling through diagnosis of linear model assumptions, and to characterize fMRI signal and artifacts through exploratory data analysis.
@@ -24,31 +26,31 @@ Technical Report.
 
 ### Interface
 
-  * [spm_diagnosis.m](https://github.com/gllmflndn/SPMd/blob/main/spm_diagnosis.m): (old) GUI
-  * [tbx_cfg_spmd.m](https://github.com/gllmflndn/SPMd/blob/main/tbx_cfg_spmd.m): (WIP) batch interface
+  * [`spm_diagnosis.m`](spm_diagnosis.m): (old) GUI
+  * [`tbx_cfg_spmd.m`](tbx_cfg_spmd.m): (WIP) batch interface
 
 ### Computation
 
-  * [spmd_comp_MS.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_comp_MS.m): see spm_spm.m and spm_searchlight.m
-     * [spmd_stat.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_stat.m)
-  * [spmd_comp_SS.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_comp_SS.m)
-  * [spmd_MkResid.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_MkResid.m): see spm_write_residuals.m
-    * [spmd_resss.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_resss.m): see compat/spm_resss.m
+  * [`spmd_comp_MS.m`](spmd_comp_MS.m): see `spm_spm.m` and `spm_searchlight.m`
+     * [`spmd_stat.m`](spmd_stat.m)
+  * [`spmd_comp_SS.m`](spmd_comp_SS.m)
+  * [`spmd_MkResid.m`](spmd_MkResid.m): see `spm_write_residuals.m`
+    * [`spmd_resss.m`](spmd_resss.m): see `compat/spm_resss.m`
 
 ### Visualisation
 
-  * [spmd_MD.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_MD.m)
-    * [spmd_MD_plot.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_MD_plot.m)
-      * [spmd_Nplot.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_Nplot.m)
-  * [spmd_MS.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_MS.m)
-  * [spmd_SD.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_SD.m)
-  * [spmd_SS.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_SS.m)
+  * [`spmd_MD.m`](spmd_MD.m)
+    * [`spmd_MD_plot.m`](spmd_MD_plot.m)
+      * [`spmd_Nplot.m`](spmd_Nplot.m)
+  * [`spmd_MS.m`](spmd_MS.m)
+  * [`spmd_SD.m`](spmd_SD.m)
+  * [`spmd_SS.m`](spmd_SS.m)
 
 ### Utilities
 
-  * [spmd_check_registration.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_check_registration.m): see spm_check_registration.m
-    * [spmd_SptlBar.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_SptlBar.m)
-  * [spmd_mtsview.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_mtsview.m)
-  * [spmd_orthviews.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_orthviews.m): see spm_orthviews.m
-  * [spmd_pointer.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_pointer.m): see spm_XYZreg.m
-  * [spmd_getTS.m](https://github.com/gllmflndn/SPMd/blob/main/spmd_getTS.m): (unused) see spm_get_data.m
+  * [`spmd_check_registration.m`](spmd_check_registration.m): see `spm_check_registration.m`
+    * [`spmd_SptlBar.m`](spmd_SptlBar.m)
+  * [`spmd_mtsview.m`](spmd_mtsview.m)
+  * [`spmd_orthviews.m`](spmd_orthviews.m): see `spm_orthviews.m`
+  * [`spmd_pointer.m`](spmd_pointer.m): see `spm_XYZreg.m`
+  * [`spmd_getTS.m`](spmd_getTS.m): (unused) see `spm_get_data.m`

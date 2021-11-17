@@ -180,7 +180,10 @@ out = [];
 
 %==========================================================================
 function dep = vout_spmd_compute(job)
-dep = [];
+dep(1)            = cfg_dep;
+dep(1).sname      = 'SPMd.mat File';
+dep(1).src_output = substruct('.','spmdmat');
+dep(1).tgt_spec   = cfg_findspec({{'filter','mat','strtype','e'}});
 
 
 %==========================================================================
